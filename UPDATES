@@ -1,0 +1,175 @@
+Changes in Stats.mod: (since v1.0.1)
+--------------------
+
+1.3.3
+- fixed bug which could crash the bot in certain cases
+- links for weekly/monthly graphs were switched
+- possible length of CSS was a little bit too limited (fix by Vetinari`)
+
+1.3.2
+- optimized sorting functions, livestats should be faster now
+- wordstats now use a binary searchtree => faster
+- loading should be faster now
+- added config file option: $quote-frequency
+- fixed rather unimportant bug (module didn't unload correctly
+  if it detected an incompatible eggdrop version)
+- new langfile entries: 
+         "place" (#502)
+         T idle idle-factor
+- new stat-type: idle (factor of minutes and lines) (idea by Zev)
+- !stat and !place had some problems with users from the stats-userbase
+- fixed problem with strict-host 0 (I hate this setting! It's useless and only
+  causes confusion and bugs! Maybe someone should remove it from eggdrop*sigh*)
+- if a user is online with 2 (or more) clients, he/she will not receive
+  online-time for each client anymore. (fix by Zev Toledano)
+- !stat wasn't using langfiles for parts of the output
+- !top10 and !place didn't recognize "slanged" sorting-types
+- fixed crash when writing static (*cough*) webfiles for channels, which the
+  bot has already left.
+- misc stats crashed if a IPv6 host was logged on the same day (*doh*)
+- updated helpfiles
+
+1.3.1
+- stats.mod now also works with eggdrop 1.6
+- you can bind livestats to one ip now
+- .chsusername can now also change the case of usernames
+
+1.3.0
+- stats.mod is now no longer dependant on the userfile (hurray!)
+- added multi-language support
+- added background-color-fading for the tables
+- added URL-logger
+- added kick-logger
+- static webfiles are now identical to livestats (which makes them
+  more detailed and way slower)
+- added livestats-flood-protection
+- added new setting list-secret-chans
+- users can now set their email- and homepage-addresses (which are displayed
+  on their personal stats pages)
+- "average users"-table has now two rows
+- splitted /chan/onchan from /chan/users
+- livestats now listen on every vhost
+- added +/-nostats
+- monthly/weekly peak wasn't resetted
+- !place couldn't handle long nicks
+
+1.2.3
+- livestats access can now be .+ignore'ed
+- user's which match $anti-autoadd-flags won't be expired anymore
+- replaced a few nmalloc's by user_malloc's to solve problems with
+  memory debugging
+- added $min-word-length
+- added +/-quietstats
+
+1.2.2
+- added some checks to prevent division by 0
+
+1.2.1
+- filt2() was buggy
+- livestats access to !chans, &chans, etc was unnecessary
+  complicated (it's /!chan/ now, as it should have been
+  from the beginning)
+- purging stats for an empty channel caused memleak and
+  non-nmalloc'ed pointers which could lead to a crash
+  on some bots
+
+1.2.0
+- added wordstats
+- added random quote
+- added new stat type: questions
+- added misc stats section to livestats
+- added meta refresh tag
+- inactive channels aren't listed in server root anymore
+- the column by which the livestats are sorted is now bold
+- added weekly and monthly stats
+- improved navigation
+- user peak is now also shown in the webfiles
+- added words per line
+- !place <type> didn't work
+- pubcmds did not work in !channels
+- improved sorting of /chan/users/
+- +secret chans are no longer listed in /
+- added livestats support for !chans +chans and &chans
+
+
+1.1.9
+- fixed yet another evil bug. I'm verry sorry... :(
+
+1.1.8
+- fixed evil bug that allowed anyone to crash the bot :(
+- added GPL licence stuff
+
+1.1.7
+- .sumuser now also transfers the starting time
+- commands were not logged
+- added cmdchar setting
+
+1.1.6
+- added webfile-suffix
+- bot won't add users with wildcards in their host anymore
+
+1.1.5
+- access to logfiles is now logged in apache format
+- IPs were turned upside down
+- changed detection of old bots, so even people who use weird patches can
+  compile this mod without problems
+- some msg commands were damaged
+- stats.mod was incompatible to the new lagcheck feature in egg1.5
+
+1.1.4
+- duration in the userlist wasn't calculated correctly
+- socket is now killed when the buffer is empty on egg1.5 (patch by fabian)
+- http-equiv refresh could be set to 0 which made browsers reload them every
+  minute :)
+- added a few '\n's
+- livestats create now less debug output
+- removed a space from !stat reply :)
+- module didn't compile if DEBUG_CONTEXT was undefined
+- sumuser now also transfers hostmasks
+- added .resetuser and [resetuser]
+- IP is now also shown on egg1.4
+- livestats access is now logged to a definable log level (1 by default)
+
+1.1.3
+- some bots crashed when they tried to delete expired users <blush>
+
+1.1.2
+- fixed problem with un-allocated sockets
+- auto-expireing of old users did not work
+- minutes on livestats-user-pages are now in duration-format
+- updates to readme and config file
+- removed the '?' from the comment of auto-added users (don't ask me why
+  it was there <g>)
+
+1.1.1
+- removed incompatibility to eggdrop1.4.1 (<sigh>)
+- added setting "stats-file-mode" to make the mode of the stats file
+  configurable
+- added meta tags in the html files
+- fixed minor bug that caused a bit too much debug output when using !place
+- added readme :))
+- one back-link was broken
+- module didn't send the correct http headers
+- tcl commands didn't get unloaded with the modul. This could cause a crash.
+
+1.1.0
+- added msg commands
+- added livestats ^_^
+- stats of unknown users are now also saved (makes debugging easier)
+- top20 reached from 10 to 20, not from 11 to 20
+- you can now define yourself which users should be excluded from the stats
+- added user peak
+- bot won't autoadd itself anymore
+- added simple flood protection
+- fixed bug in !place
+- grmpf... it did not work on eggdrop1.4 (why didn't anyone tell me that???<g>)
+
+1.0.2
+- added compatibility to 1.4.x
+- started this updates history <g>
+- added help files
+- added smileys to !stat
+- changed "chan->name" to "chan->dname"
+- users with zero stats were still listed
+- link to today's stats showed up even if write-today was disabled
+- timers for webfile generation and saving triggered one minute too late

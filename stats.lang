@@ -1,0 +1,243 @@
+#######################################
+#
+# Language file for stats.mod v1.3.0
+# ----------------------------------
+#
+#
+# Usage is pretty self-explaining.
+# If you add more than one line per item, a random one will be selected
+# each time when it's used.
+#
+# You can use some variables, but not every var in every place.
+# (using [user] on the index page would be nonsense, for example.
+#  In such cases, the var is unitialized (which might even cause a crash))
+#
+# Also be only aware of the fact, that [user] is not the same as [nick] and
+# [value] not the same as [int]. (which has something to do with the internal
+# processing of those vars.)
+#
+##########################################
+
+# rename the names of the different stat types, if you don't like them.
+# if no name is defined, the standard will be used.
+T minutes time wasted
+T wpl words/line
+T smileys smilies
+T idle idle-factor
+
+# things you want to put into the header of each html file (CSS for example)
+1 <style type="text/css"><!--  A:link { text-decoration: none; }  A:visited { text-decoration: none;}  A:active { text-decoration: none;}  A:hover { text-decoration: underline;} --></style>
+
+# the bodytag (use this to change the colors of the pages)
+5 <BODY BGCOLOR=#000000 TEXT=#1A9DFF LINK=#00D993 VLINK=#71C2FF ALINK=#2FFFBB>
+
+# These two items get inserted at the top and bottom of every page,
+# so if you want to insert livestats into an existing page design,
+# you might add menu bars and similar stuff here.
+# If not, just add an empty item.
+
+# Example1 (header and footer from external files):
+#10 [source head.html]
+#11 [source footer.html]
+
+# Example2 (no header or footer at all):
+10
+11
+
+# title of the index page
+100 [bot]'s Livestats
+100 Livestats of [bot]
+100 Livestats
+100 Livestats - Channel Overview
+
+# text that describes the link to the top talkers
+105 top[topnr]
+
+# time range of the stats
+110 total
+111 daily
+112 weekly
+113 monthly
+
+# same as above, but for user pages
+114 total
+115 today
+116 this week
+117 this month
+
+# link to user- and misc-stats pages
+118 userlist
+119 Who's on now?
+120 misc stats
+
+# title of channel-page
+130 [chan] statistics index
+
+# <title>s of toptalker pages
+200 Total top [topnr] talkers on channel [chan]
+201 Daily top [topnr] talkers on channel [chan]
+202 Weekly top [topnr] talkers on channel [chan]
+203 Monthly top [topnr] talkers on channel [chan]
+
+# heads of toptalker pages
+210 <center><H1>Total top [topnr] talkers on channel [chan]</H1></center>
+211 <center><H1>Daily top [topnr] talkers on channel [chan]</H1></center>
+212 <center><H1>Weekly top [topnr] talkers on channel [chan]</H1></center>
+213 <center><H1>Monthly top [topnr] talkers on channel [chan]</H1></center>
+
+# self-explaining...
+214 <center>Ordered by "%s" (to change it click corresponding table field).
+215 User peak: [peak]</center>
+216 No
+217 Total users: [totalusers]
+218 (stats logged since [chanstarted])
+
+# link to graphs
+220 graphs
+
+# link back to the index
+221 other channels
+
+# time string (singular and plural)
+250 year
+251 years
+252 week
+253 weeks
+254 day
+255 days
+256 hour
+257 hours
+258 minute
+259 minutes
+
+# <title>s of graph pages
+300 Total top [graphnr] graphs on channel [chan]
+301 Daily top [graphnr] graphs on channel [chan]
+302 Weekly top [graphnr] graphs on channel [chan]
+303 Monthly top [graphnr] graphs on channel [chan]
+
+# heads of graph pages
+310 <center><h1>Total top [graphnr] graphs on channel [chan]</h1></center>
+311 <center><h1>Daily top [graphnr] graphs on channel [chan]</h1></center>
+312 <center><h1>Weekly top [graphnr] graphs on channel [chan]</h1></center>
+313 <center><h1>Monthly top [graphnr] graphs on channel [chan]</h1></center>
+
+# self-explaining
+320 <font size=+1>Ordered by <b>%s</b></font>
+321 <center><font size=-1>[[int] %s total]</font></center>
+322 [others]
+323 table
+
+# /chan/users/
+400 users of [chan]
+
+# /chan/onchan
+410 Users who are currently on [chan]
+420 Currently on channel:
+430 idle time
+435 netsplitted
+436 <-- it's me ^_^
+
+450 email address
+451 homepage
+
+# userpage title
+500 Stats for [user] in [chan]
+# userpage head
+501 <H1>Stats for [user] in [chan]</H1>
+502 Place
+# self-explaining...
+510 random quote: "%s"
+520 [user] spoke [int] different words today. These are the most used ones:
+530 other users
+
+## Misc Stats
+# title
+600 Misc Stats in [chan]
+# head
+610 <center><font size=+2>Misc Stats of Today in [chan]</font>
+# self-explaining...
+620 Average users:
+630 Today's Topics:
+631 (set by [nick] at %s)
+640 [int] random URLs
+641 (last mentioned by [nick] at %s)
+650 Most used
+651 ISPs
+652 TLDs
+660 [int] random kicks
+670 Registered users spoke %d different words
+671 These are the most used ones:
+
+# The last part of the misc stats, big numbers. That's how you use it:
+# BN <type> <place> <text>
+# All places of the same type will be in one table row.
+BN nicks 1 <a href="../users/[user]/">[user]</a> couldn't decide which nick is the best and changed it [value] times.
+BN nicks 2 <font size=-2><div align="right"><a href="../users/[user]/">[user]</a> was also curious which of his [value] nicks is perfect.</div></font>
+BN kicks 1 <a href="../users/[user]/">[user]</a> did what was necessary and kicked [value] people.
+BN kicks 2 <font size=-2><div align="right">The second most active punisher was <a href="../users/[user]/">[user]</a>([value] kicks).</div></font>
+BN smileys 1 <a href="../users/[user]/">[user]</a> had a happy day and smiled [value] times.
+BN smileys 2 <font size=-2><br><div align="right"><a href="../users/[user]/">[user]</a> also enjoyed his/her visit with [value] smileys</font></div>
+BN questions 1 <a href="../users/[user]/">[user]</a> knows that wisdom is the real wealth and asked [value] questions.
+BN questions 2 <font size=-2><div align="right"><a href="../users/[user]/">[user]</a> was also seeking for input [value] times.</div></font>
+BN joins 1 <a href="../users/[user]/">[user]</a> wasn't too sure whether he/she should stay or not and visited [chan] [value] times
+BN joins 2 <font size=-2><div align="right"><a href="../users/[user]/">[user]</a> is the second one who tried to get kicked for mass-joining ([value] joins)</div></font>
+BN wpl 1 <a href="../users/[user]/">[user]</a> likes long speeches and wrote an average of [value] words per line.
+BN wpl 2 <font size=-2><div align="right"><a href="../users/[user]/">[user]</a> is another fan of long, expressive sentences with [value] words/line.</div></font>
+BN vocables 1 <a href="../users/[user]/">[user]</a> has the largest vocabulary with [value] different words.
+BN vocables 2 <font size=-2><div align="right"><a href="../users/[user]/">[user]</a> used almost as much vocables ([value])</div></font>
+
+## This is for the file that explains that there are no stats for 
+## every single user in the static webfiles.
+## I hope you don't need this! ^_^
+# title
+900 Feature not available with static webfiles.
+# body
+901 <center><font size=+2>Sorry, but this feature is not available with static webfiles. <br><br></font>Beg your bot-admin to activate livestats. ^_^</center>
+
+## public commands
+
+1000 No such stat type.
+
+# !top10
+1001 Top[int](%s):
+1002 Today's Top[int](%s):
+1003 Weekly Top[int](%s):
+1004 Monthly Top[int](%s):
+# !top10 word foo
+1005 Top [int]("%s"):
+
+1010 [nick], sorry, I don't have any stats about you.
+1011 Sorry, I don't have any stats about [nick] in [chan].
+
+# !place
+1012 [nick] is on place #[int] out of [totalusers].
+1013 Today, [nick] is on place #[int] out of [totalusers].
+1014 This week, [nick] is on place #[int] out of [totalusers].
+1015 This week, [nick] is on place #[int] out of [totalusers].
+
+# !wordstats
+1016 Sorry, I don't have any wordstats about [nick] in [chan]
+1017 words most used by [user]:
+
+# !topwords
+1018 Most used words in [chan]:
+
+## /msg <bot> SETEMAIL|SETHOMEPAGE
+1020 Sorry, I don't recognize you.
+1021 Usage: /msg <bot> SETEMAIL <emailadress>
+1022 Successfully set new email address for you.
+1023 Usage: /msg <bot> SETHOMEPAGE <homepage>
+1024 Successfully set homepage address for you.
+
+## /msg <bot> top10
+2030 Sorry, that is not a valid channel. Usage: top10 <chan>
+2031 Sorry, that is not a valid channel. Usage: ttop10 <chan>
+2032 Sorry, that is not a valid channel. Usage: top20 <chan>
+2033 Sorry, that is not a valid channel. Usage: ttop20 <chan>
+2034 Sorry, that is not a valid channel. Usage: place <chan>
+2035 Sorry, that is not a valid channel. Usage: tplace <chan>
+2036 Sorry, that is not a valid channel. Usage: stat <chan> [user]
+2037 Sorry, that is not a valid channel. Usage: tstat <chan> [user]
+2038 Sorry, that is not a valid channel. Usage: wordstats <chan> [user]
+2039 Sorry, that is not a valid channel. Usage: topwords <chan>

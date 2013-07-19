@@ -1,0 +1,243 @@
+Description:
+------------
+
+Stats.mod generates statistics about the users in a channel. It counts
+the words that the users have spoken, the lines, actions, smileys,
+joins, quits, mode changes, topic changes, nick changes, kicks and how
+long the user has been on the channel. Depending on the configuration,
+it even logs the user's favourite words and the most used words on
+the channel.
+
+The statistics are accessable via public commands (!top10, !stat...)
+and via http.
+
+
+Installation:
+-------------
+
+Stats.mod will work with eggdrop1.6.x and eggdrop1.4.x.
+
+The following instructions assume, ~/eggdrop1.6/ is the directory
+where you installed your eggdrop from. (of course, other source dirs
+will work as well)
+Unfortunately, you need to compile stats.mod within your eggdrop source,
+so if you removed your original compile directory, you'll have to
+compile the whole bot again... sorry.
+
+Put stats.mod.1.3.2.tar.gz in ~/eggdrop1.6/src/mod/,
+and unpack it (tar xfz stats.mod.1.3.2.tar.gz). Change directory
+back to ~/eggdrop1.6/. Type 'make config' (on eggdrop 1.4, you can skip
+that part) Type 'make', wait until compiling
+is done and use 'make install' to install the bot and stats.mod.
+
+Don't forget to copy the language files from ~/eggdrop1.6/src/mod/stats.mod/ to
+~/eggdrop/language/ !
+
+All settings can be found in ~/eggdrop1.6/src/mod/stats.mod/stats.conf
+I suggest to copy it to your eggdrop directory (probably ~/eggdrop/),
+edit it to fit your needs and put a 'source stats.conf' at the end of
+your eggdrop config file. This will execute the config file with every
+restart or rehash.
+
+
+
+Public commands:
+----------------
+
+!top10 [ordering]
+  lists the top10 users in the channel
+!top20 [ordering]
+  same as !top10, but lists the top20 (surprise!)
+!stat [user]
+  shows the statistics for the user
+!place [user/ordering]
+  shows on which place the user is
+!ttop10/!ttop20/!tstat/!tplace
+  same as above, but only uses the statistics of today
+
+Only available if log-wordstats is turned on:
+!wordstats [user]
+  lists the most used words of the user
+!topwords
+  lists the most used words in the channel
+!top10 word <word>
+  lists the top10 people who used <word>
+
+Msg commands:
+-------------
+
+All public commands are also accessible via /msg.
+("/msg <bot> top10 #chan", for example)
+
+
+Additionally, there are two new commands:
+
+/msg <bot> setemail <email-address>
+  sets your email address
+/msg <bot> sethomepage <homepage-address>
+  sets the URL of your homepage
+
+DCC commands:
+-------------
+
+.+suser <user> [host]
+  adds a new user to the database
+.-suser <user>
+  removes a user from the database
+.+shost <user> <hostmask>
+  adds a new hostmask to <user>
+.-shost <user> <hostmask>
+  removes a hostmask from <user>
+.smatch [mask] [+/-list] [+/-addhosts]
+  lists all matching users
+.schannel #chan
+  displays the stats-users in a channel
+.schattr <user> <flags>
+  changes the flags for a stats user
+.chsusername <oldname> <newname>
+  changes the name of a user in the stats database
+.purgestats
+  deletes stats for non-existant users, empty stats and deletes expired users.
+  (m|-)
+.sumuser <user1> <user2>
+  adds all statistics of user2 to user1 and deletes user2
+  (n|-)
+.resetuser <user> <channel>
+  sets all statistics of user in channel to 0
+  (m|-)
+
+.writewebstats
+  writes the old, static webfiles
+  (m|-)
+
+TCL commands:
+-------------
+
+incrstats <user> <chan> <type> <value> [set]
+  increases the statistics of type <type> in <chan> for <user> by <value>.
+  If <set> is 1, the stats are not increased but set to the value.
+
+getstats <user> <chan> <type> [today]
+  returns the stats of <user> in <chan> of type <type>. If <today> is 1,
+  the statistics of today are returned.
+
+livestats <port>
+  starts listening for livestats connections on port <port>.
+  If <port> is "off" or "0", the bot will stop listening.
+
+resetuser <user> <channel>
+  sets all statistics of user in channel to 0
+
+resetslang
+  removes every language from the memory, so you can cleanly load a new
+  set of languages.
+
+loadslang [lang] <langfile>
+  loads a language
+
+setchanslang <channel> <language>
+  sets the language in <channel> to <language>
+
+nick2suser <nick> <channel>
+  returns the username of <nick> in <chan>
+
+
+Livestats:
+----------
+
+If you activate livestats, your bot will listen on a specified port for
+http connections. (accessable via http://your.shell.com:8033/, for example)
+The webfiles will then be generated on the fly. There will also be a little
+channel and user list which makes it easier for your users to browse through
+the several channel statistics of your bot.
+  This method also uses less cpu power than the frequently written webfiles,
+because only the file that is really needed is generated. 
+  Use .console +1 to see access, or use the setting stats-loglevel to
+change the loglevel.
+  Stats.mod is now also able to log the access to a CLF logfile, so you can
+use your favourite loganalyzer to generate stats of the stats access. :)
+
+Hint: If you don't want a channel to be listed on the index,
+----  just set it +secret.
+
+Static Webfiles:
+---------------
+
+If there's really no way to use livestats, stats.mod can also generate static
+web files.
+In this case, it simply mirrors the whole livestats server into a directory
+on your shell. Of course, this takes some time. You bot won't be able to
+do anything while it's generating the files, so only use it if there's no
+other way. (expect an occasional ping timeout on large channels)
+Be sure that you chose an empty output directory.
+
+User management:
+----------------
+
+Since v1.3.0, stats.mod has an internal userdatabase. It can automatically
+add users and hostmasks to it. Users which are in the eggdrop userfile have a
+higher priority, so if someone is known as "bla" by the bot and as "blub"
+by stats.mod, his stats will be logged to "bla".
+  Hostmasks will be removed from a user if they haven't been used for a
+specified time. If all hosts got removed from a user, the user will be erased
+completely.
+  Note that stats.mod can't know when someone used IDENT or if someone added
+new hosts to a user manually. The affected user should cycle the chan to make
+sure that he's recognized correctly by stats.mod.
+
+There are two flags for users: +/-list and +/-addhosts:
+- If a user has the flag -list, he/she/it won't be listed in the top10. (you
+  probably want to set all your bot -list)
+- If a user is -addhosts, no new hostmasks will be added to him/her. You'll
+  have to add all hosts manually with .+shost. (useful if someone if trying
+  to fake you)
+
+Channel settings:
+-----------------
+
+If you're using eggdrop 1.5 or later, you have some additional config options
+available via .chanset:
+
++nopubstats
+	Disables all channel commands (!top10 etc...)
++quietstats
+	Bot will reply with a notice directly to the user instead of
+	sending the reply to the channel
++nostats
+	Don't log any stats in this chan at all.
+
+Other:
+------
+
+There is absolutely NO WARRANTY on this module. I do my best to make it
+work properly, but if anything gets screwed up, I'm not responsible. Use
+this module at your own risk.
+
+Known problems:
+---------------
+
+There can be a problem if you use wordstats on a bot with enabled memory
+debugging. The reset of the daily stats might take a long time on slow shells.
+If your bot is on big channels, your memory table might be too small.
+Edit src/mem.c and change the #define that sets the size of the memtable
+(#define MEMTBLSIZE 25000      /* yikes! */) to a higher value.
+
+Feedback:
+---------
+
+Feel free to send feedback and bugreports(I hope there won't be any<g>) to
+stats.mod@visions-of-fantasy.de
+
+Homepage:
+---------
+
+The latest version of stats.mod(and a few addons) can always be found at
+http://www.visions-of-fantasy.de/stats.mod/
+
+Thanks to:
+----------
+
+- Fabian for teaching me plenty of things
+- Johoho and Fox_Muld for various bug reports and suggestions
+- dw for the idea of livestats and for many bug reports
+- the eggdev team for developing eggdrop

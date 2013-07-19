@@ -1,0 +1,147 @@
+%{help=stats settings}%{+n}
+###  Settings for the %bstats module%b
+  save-stats webupdate topnr graphnr autoadd expire-users
+  quote-frequency log-wordstats min-word-length
+  use-eggdrop-userfile table-border display-urls kick-context
+  display-kicks display-average-users show-userlist
+  show-usersonchan list-secret-chans statsfile topstats
+  webdir smilies graphstats graphgif graphcolor livestats-loglevel
+  livestats-log stat-reply livestats-ignore-msg livestats-ip
+  max-stat-cmds max-livestats-access
+%{help=set save-stats}
+%{+n}
+###  %bset save-stats%b <#>
+  save data every # minutes
+%{help=set webupdate}
+%{+n}
+###  %bset webupdate%b <#>
+  update webfiles every # minutes
+  (outdated, use livestats instead!)
+%{help=set topnr}
+%{+n}
+###  %bset topnr%b <#>
+  list top # users in the toptalker-tables
+%{help=set graphnr}
+%{+n}
+###  %bset graphnr%b <#>
+  list top # users in the graphical stats
+%{help=set autoadd}
+%{+n}
+###  %bset autoadd%b <#>
+  autoadd users to the userbase if they stay on the channel
+  for more than # minutes
+%{help=set expire-users}
+%{+n}
+###  %bset expire-users%b <#>
+  delete users/hosts if they haven't been seen for more than
+  x days
+%{help=set quote-frequency}
+%{+n}
+###  %bset quote-frequency%b <#>
+  store every #th sentence of a user as a quote
+%{help=set log-wordstats}
+%{+n}
+###  %bset log-wordstats%b <1/0>
+  log wordstats? (uses much memory and cpu)
+%{help=set min-word-length}
+%{+n}
+###  %bset min-word-length%b <#>
+  minimum length of a word to get logged in the wordstats
+%{help=set use-eggdrop-userfile}
+%{+n}
+###  %bset use-eggdrop-userfile%b <0/1>
+  add new users to the eggdrop userfile instead of the internal stats
+  database? (hint: _bad_ idea)
+%{help=set table-border}
+%{+n}
+###  %bset table-border%b <#>
+  defines the table border (anything else than 0 should look... ermm.. weird)
+%{help=set display-urls}
+%{+n}
+###  %bset display-urls%b <#>
+  defines how many random urls should be displayed on the miscstats page
+%{help=set kick-context}
+%{+n}
+###  %bset kick-context%b <#>
+  defines how many previous lines should be displayed with a kick on the miscstats page
+%{help=set display-kicks}
+%{+n}
+###  %bset display-kicks%b <#>
+  defines how many random kicks should be displayed on the livestats page
+%{help=set display-average-users}
+%{+n}
+###  %bset display-average-users%b <1/0>
+  show how many users have been on the chan in average?
+%{help=set show-userlist}
+%{+n}
+###  %bset show-userlist%b <1/0>
+  display a complete list of all users?
+%{help=set show-usersonchan}
+%{+n}
+###  %bset show-usersonchan%b <1/0>
+  display who's currently on the chan?
+%{help=set list-secret-chans}
+%{+n}
+###  %bset list-secret-chans%b <1/0>
+  list secret (.chanset +secret) chans on the index page?
+%{help=set statsfile}
+%{+n}
+###  %bset statsfile%b <filename>
+  file where all stat- and user-data will be stored
+%{help=set topstats}
+%{+n}
+###  %bset topstats%b <list of stat-types>
+  defines which stat-types you want to be displayed in the topX tables and on the user-page
+%{help=set webdir}
+%{+n}
+###  %bset webdir%b <directory>
+  the directory to which static webfiles (*cough*!) are written
+%{help=set smileys}
+%{+n}
+###  %bset smilies%b <smiley-list>
+  a list of smilies that should be counted
+%{help=set graphstats}
+%{+n}
+###  %bset graphstats%b <list of stat-types>
+  defines which stats should be listed on the graphical stat-pages
+%{help=set graphgif}
+%{+n}
+###  %bset graphgif%b <full URL>
+  optional background image for the graphs to make them look more "3D"
+  NOTE: this must be a full URL. The image must be placed somewhere
+  	on your webpage since stats.mod can't transfer binary images.
+%{help=set graphcolor}
+%{+n}
+###  %bset graphcolor%b <color>
+  defines the color of the graphs
+%{help=set livestats-loglevel}
+%{+n}
+###  %bset livestats-loglevel%b <loglevel>
+  defines where access to the livestats should be logged
+  (use .console +<loglevel> to watch the chosen loglevel)
+%{help=set livestats-log}
+%{+n}
+###  %bset livestats-log%b <logfile>
+  defines the file to which livestats access should be logged (for use with a
+  loganalyzer, for example)
+%{help=set stat-reply}
+%{+n}
+###  %bset stat-reply%b <list of stat-types>
+  defines which stat-types should be displayed if someone uses the command !stat
+%{help=set livestats-ignore-msg}
+%{+n}
+###  %bset livestats-ignore-msg%b <msg>
+  this message is sent to users who tried to access livestats, but are ignored
+%{help=set livestats-ip}
+%{+n}
+###  %bset livestats-ip%b <IP>
+  defines the IP on which livestats will be reachable
+  set this to "" to use all IPs
+%{help=set max-stat-cmds}
+%{+n}
+###  %bset max-stat-cmds%b <n:s>
+  defines the maximum number of commands (n) which will be answered in s seconds
+%{help=set max-livestats-access}
+%{+n}
+###  %bset max-livestats-access%b <n:s>
+  defines the maximum number of livestats requests (n) which will be processed in s seconds

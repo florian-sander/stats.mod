@@ -1,0 +1,95 @@
+%{help=savestats}%{+m}
+###  %bsavestats%b
+  Saves all data.
+%{help=resetuser}%{+m|-}
+###  %bresetuser%b <user> <chan>
+  resets all statistics of <user> in <chan> to 0.
+%{help=schannel}%{+o|+o}
+###  %bschannel%b [channel]
+  displays a list of users on the channel, listing their nicks and
+  corresponding stats-usernames.
+%{help=swhois}%{+o|+o}
+###  %bswhois%b <user>
+  displays information about <user> (stat-flags, hosts, etc...)
+  flags:
+    +/-list: list a user in the top10/20/etc?
+    +/-addhosts: automatically add new hosts to user?
+%{help=+shost}%{+m|-}
+###  %b+shost%b <user> <host>
+  adds a host to <user>
+%{help=-shost}%{+m|-}
+###  %b-shost%b <user> <host>
+  removes a host from <user>
+%{help=+suser}%{+m|-}
+###  %b+suser%b <user> [host]
+  creates a new stat-user record
+%{help=-suser}%{+m|-}
+###  %b-suser%b <user>
+  deletes a stat-user
+%{help=schattr}%{+m|-}
+###  %bschattr%b <user> <flags>
+  changes the flags of a stat-user
+%{help=smatch}%{+m}
+###  %bsmatch%b [user] [host] [flags]
+  displays all matching users
+  wildcards allowed.
+%{help=chsusername}%{+m}
+###  %bchsusername%b <user> <newname>
+  changes the name of an user
+%{help=writewebstats}%{+m|-}
+###  %bwritewebstats%b <channels>
+   writes the static (*cough*!) webfiles for the given channels.
+%{help=purgestats}%{+m|-}
+###  %bpurgestats%b
+   purges all outdates statistics and deletes old users
+%{help=sumuser}%{+n|-}
+###  %bsumuser%b <user1> <user2>
+   transfers all stats from user2 to user1 and deletes user2
+%{help=stats module}%{+m}
+###  help on the %bstats module%b
+   Commands available: (use %b'.help <command>'%b for more info)
+%{+o|o}
+   for ops:
+      %bschannel%b
+      %bswhois%b
+%{+m|m}
+   for masters:
+      %bsavestats%b
+      %bresetuser%b
+      %b+shost%b
+      %b-shost%b
+      %b+suser%b
+      %b-suser%b
+      %bschattr%b
+      %bsmatch%b
+      %bchsusername%b
+      %bwritewebstats%b
+      %bpurgestats%b
+      %bsumuser%b
+%{+n}
+   There is also a list of tcl settings avalible,
+   use %b'.help stats settings'%b   
+%{help=all}%{+m}
+###  commands for the %bstats module%b
+   Commands available: (use %b'.help <command>'%b for more info)
+%{+o|o}
+   for ops:
+      %bschannel%b
+      %bswhois%b
+%{+m|m}
+   for masters:
+      %bsavestats%b
+      %bresetuser%b
+      %b+shost%b
+      %b-shost%b
+      %b+suser%b
+      %b-suser%b
+      %bschattr%b
+      %bsmatch%b
+      %bchsusername%b
+      %bwritewebstats%b
+      %bpurgestats%b
+      %bsumuser%b
+%{+n}
+   There is also a list of tcl settings avalible,
+   use %b'.help stats settings'%b
