@@ -1,0 +1,202 @@
+# time string (singular and plural)
+D 0 Jahr
+D 1 Jahre
+D 2 Woche
+D 3 Wochen
+D 4 Tag
+D 5 Tage
+D 6 Stunde
+D 7 Stunden
+D 8 Minute
+D 9 Minuten
+D 10 Sekunde
+D 11 Sekunden
+D 12 etwas Zeit
+
+1 <style type="text/css"><!--  A:link { text-decoration: none; }  A:visited { text-decoration: none;}  A:active { text-decoration: none;}  A:hover { text-decoration: underline;} --></style>
+
+10 <BODY BGCOLOR="#000000" TEXT="#1A9DFF" LINK="#00D993" VLINK="#71C2FF" ALINK="#2FFFBB">
+
+100 <?bot/?>'s Livestats
+
+105 Top<?topnr/?>
+
+110 insgesamt
+111 heute
+112 diese Woche
+113 diesen Monat
+
+120 Benutzerliste
+121 Wer ist grade da?
+122 Verschiedenes
+
+130 Andere Kanäle
+
+200 <?chan/?> Inhaltsverzeichnis
+
+# <title>s of toptalker pages
+300 Die aktivsten Labertaschen von <?chan/?>
+301 Die heute aktivsten Labertaschen von <?chan/?>
+302 Die aktivsten Labertaschen von <?chan/?> in dieser Woche
+303 Die aktivsten Labertaschen von <?chan/?> in diesem Monat
+
+# heads of toptalker pages
+310 Die aktivsten Labertaschen von <?chan/?>
+311 Die heute aktivsten Labertaschen von <?chan/?>
+312 Die aktivsten Labertaschen von <?chan/?> in dieser Woche
+313 Die aktivsten Labertaschen von <?chan/?> in diesem Monat
+
+320 Sortiert nach "<?sorting/?>"
+330 größte Benutzeransammlung: <?peak/?>
+340 Nr
+341 Benutzer
+342 Info
+343 zufälliges Zitat
+350 Benutzer insgesamt: <?totalusers/?>
+360 (Statistiken gelogt seit <?chanstarted/?>)
+370 beliebige Sortierung
+380 graphische Darstellung
+
+# <title>s of graph pages
+400 Total top <?graphnr/?> graphs on channel <?chan/?>
+401 Daily top <?graphnr/?> graphs on channel <?chan/?>
+402 Weekly top <?graphnr/?> graphs on channel <?chan/?>
+403 Monthly top <?graphnr/?> graphs on channel <?chan/?>
+
+# heads of graph pages
+410 Total top <?graphnr/?> graphs on channel <?chan/?>
+411 Daily top <?graphnr/?> graphs on channel <?chan/?>
+412 Weekly top <?graphnr/?> graphs on channel <?chan/?>
+413 Monthly top <?graphnr/?> graphs on channel <?chan/?>
+
+# self-explaining
+420 Sortiert nach "<b><?sorting/?></b>"
+430 [<?value/?> <?sorting/?> insgesant]
+440 [andere]
+450 Tabelle
+
+
+# /chan/users/
+500 <?chan/?>'s Stammgäste
+
+# /chan/onchan
+600 <?chan/?>'s aktuelle Besatzung
+610 Jetzt im Channel:
+620 inaktiv seit
+630 verschollen
+640 <-- meinereiner ^_^
+
+# userpage title
+700 Statistiken für <?user/?> in <?chan/?>
+# userpage head
+710 Statistiken für <?user/?> in <?chan/?>
+720 ICQ#
+721 eMail
+722 Homepage
+723 Alter
+730 Platz
+# self-explaining...
+740 Zitat:
+750 <?user/?> gab heite <?userwords/?> verschiedene Wörter von sich. Dies sind die häufigsten:
+760 insgesamt
+761 heute
+762 diese Woche
+763 diesen Monat
+780 Einstellungen ändern
+
+## Misc Stats
+# title
+800 Verschiedene Statistiken in <?chan/?>
+# head
+810 Verschiedene Statistiken von heute in <?chan/?>
+# self-explaining...
+820 Channel Auslastung:
+825 Benutzer
+826 Zeilen
+830 Heutige Topics:
+835 gesetzt von <?topic_by/?> um <?topic_when/?>
+840 <?random_urls/?> zufällige URLs
+845 zuletzt erwähnt von <?url_by/?> um <?url_when/?>
+850 meist genutzte
+855 Provider
+856 TLDs
+860 <?random_kicks/?> zufällige Kicks
+870 Registrierte Benutzer gaben <?chanwords/?> verschiedene Worte von sich.
+875 Dies sind die häufigsten:
+
+# The last part of the misc stats, misc facts. That's how you use it:
+# F <type> <place> <text>
+F nicks 1 <a href="../users/<?user/?>/"><?user/?></a> konnte sich für keinen nick entscheiden und wechselte selbigen <?value/?> mal.
+F nicks 1 <a href="../users/<?user/?>/"><?user/?></a> hatte die größte Auswahl an nicks (<?value/?>).
+F nicks 2 <a href="../users/<?user/?>/"><?user/?></a> hat auch <?value/?> Versuche gebraucht um sich zu entscheiden.
+
+F kicks 1 <a href="../users/<?user/?>/"><?user/?></a> tat was nötig war und beseitigte <?value/?> Störenfriede.
+F kicks 1 <a href="../users/<?user/?>/"><?user/?></a> war heute leicht reizbar und beförderte <?value/?> Opfer aus dem Channel.
+F kicks 1 Mit <a href="../users/<?user/?>/"><?user/?></a> war heute nicht zu scherzen... <?value/?> Opfer erfuhren dies auf die harte Art.
+F kicks 2 Der zweit-aktivste Bestrafer war <a href="../users/<?user/?>/"><?user/?></a> mit <?value/?> kicks.
+F kicks 2 Auch <a href="../users/<?user/?>/"><?user/?></a> verlor in <?value/?> Fällen die Geduld.
+F kicks 2 Auch <a href="../users/<?user/?>/"><?user/?></a>'s Toleranz war in <?value/?> Fällen erschöpft.
+
+F smileys 1 <a href="../users/<?user/?>/"><?user/?></a> war heute gut gelaunt und grinste <?value/?> mal.
+F smileys 1 <a href="../users/<?user/?>/"><?user/?></a> hatte einen guten Tag und grinste <?value/?> mal.
+F smileys 1 <a href="../users/<?user/?>/"><?user/?></a> hatte <?value/?> mal einen recht strahlenden Gesichtsausdruck.
+F smileys 2 <a href="../users/<?user/?>/"><?user/?></a> genoss den Besuch in <?chan/?> mit <?value/?> smileys offensichtlich auch.
+
+F questions 1 <a href="../users/<?user/?>/"><?user/?></a> weiß das Wissen Macht bedeutet und stellte <?value/?> fragen.
+F questions 2 Auch <a href="../users/<?user/?>/"><?user/?></a> war <?value/?> mal auf der Suche nach Input.
+
+F joins 1 <a href="../users/<?user/?>/"><?user/?></a> wusste nicht so recht, ob er/sie bleiben sollte oder nicht und betrat <?chan/?> <?value/?> mal.
+F joins 2 <a href="../users/<?user/?>/"><?user/?></a> gab sich fast genauso viel Mühe für mass-joining gekickt zu werden.
+
+F vocables 1 <a href="../users/<?user/?>/"><?user/?></a> hat mit <?value/?> verschiedenen Wörtern das größte Vokabular.
+F vocables 1 <a href="../users/<?user/?>/"><?user/?></a> drückte sich mit Hilfe von <?value/?> verschiedenen Wörtern recht vielseitig aus.
+F vocables 2 Auch <a href="../users/<?user/?>/"><?user/?>'s</a> Wortschatz ist nicht zu verachten. (<?value/?> Wörter)
+
+
+1000 Einstellungen für <?user/?>
+1010 Benutzername
+1020 Passwort
+1030 Alter
+1035 erlaubte Abwesenheit
+1036 danach wird das Konto gelöscht
+1040 Neues Passwort
+1045 Neues Passwort (Bestätigung)
+1050 ICQ#
+1060 eMail
+1070 Homepage
+1080 List me in the top<?topnr/?>?
+1081 Soll ich automatisch neue Hosts zu deinem Account hinzufügen?
+1082 Soll ich deine Stats überhaupt zugänglich machen?
+1083 (falls Du wegen dem Datenschutz besorgt bist...)
+1085 jepp
+1086 nö
+
+1100 User Login
+1110 If you don't have a password set yet, you can do it now on IRC:
+1120 WARNING: This password will be transferred and stored in plaintext, so better don't use your mail password or any other important password.
+1130 I forgot my password
+
+1200 Login Error!
+1210 Your attempt to login resulted in the following error:
+
+1300 No Error !?!
+1301 User not found!
+1302 You don't have a password set! (see instructions on the login page)
+1303 Wrong Password!
+
+1400 Try again!
+
+1500 Password emailed
+1510 Your password has been emailed to you.
+
+1600 your stats password
+1610 Hello,
+1610 
+1610 seems that you've forgotten your password. I'm not a sadistic robot,
+1610 so I decided to do you a favour and send your password to you:
+1610 
+1610 	"<?password/?>"
+1610
+1610 Try not to forget it again. ^_^
+1610 
+1610 Have a nice day...

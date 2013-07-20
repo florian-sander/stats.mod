@@ -30,21 +30,6 @@ static int cmd_loadstats(struct userrec *u, int idx, char *par)
   return 0;
 }
 
-static int cmd_writewebstats(struct userrec *u, int idx, char *par)
-{
-  Context;
-#if EGG_IS_MIN_VER(10500)
-  write_new_webstats();
-#else
-  dprintf(idx, "Sorry, this function isn't available with eggdrop1.4.\n");
-  dprintf(idx, "Either update your bot to eggdrop1.5+ or use livestats instead of static webfiles.\n");
-  dprintf(idx, "(or even better: do both! <g>)\n");
-#endif
-  putlog(LOG_CMDS, "*", "#%s# writewebstats %s", dcc[idx].nick, par);
-  Context;
-  return 0;
-}
-
 static int cmd_purgestats(struct userrec *u, int idx, char *par)
 {
   Context;
@@ -61,75 +46,29 @@ static int cmd_purgestats(struct userrec *u, int idx, char *par)
 
 static int cmd_sumuser(struct userrec *user, int idx, char *par)
 {
-  struct userrec *u1, *u2;
   struct stats_userlist *uu1, *uu2;
-  struct stats_hostlist *h;
-  char *user1, *user2, *hand1, *hand2;
-  globstats *gs;
-  locstats *ls;
-  int i;
-  struct list_type *q;
+  char *user1, *user2;
 
   Context;
   user1 = newsplit(&par);
   user2 = par;
-  u1 = get_user_by_handle(userlist, user1);
-  u2 = get_user_by_handle(userlist, user2);
   uu1 = findsuser_by_name(user1);
   uu2 = findsuser_by_name(user2);
   if (!user1[0] || !user2[0]) {
     dprintf(idx, "Usage: .sumuser <user1> <user2>\n");
     return 0;
   }
-  if (use_userfile && !u1) {
+  if (!uu1) {
     dprintf(idx, "%s isn't a valid user!\n", user1);
     return 0;
   }
-  if (use_userfile && !u2) {
+  if (!uu2) {
     dprintf(idx, "%s isn't a valid user!\n", user2);
     return 0;
   }
-  if (!use_userfile && !uu1) {
-    dprintf(idx, "%s isn't a valid user!\n", user1);
-    return 0;
-  }
-  if (!use_userfile && !uu2) {
-    dprintf(idx, "%s isn't a valid user!\n", user2);
-    return 0;
-  }
-  if (use_userfile) {
-    hand1 = u1->handle;
-    hand2 = u2->handle;
-  } else {
-    hand1 = uu1->user;
-    hand2 = uu2->user;
-  }
-  for (gs = sdata; gs; gs = gs->next) {
-    for (ls = gs->local; ls; ls = ls->next) {
-      if (!strcasecmp(ls->user, hand2)) {
-        for (i = 0; i < TOTAL_TYPES; i++) {
-          incrstats(hand1, gs->chan, i, ls->values[S_TOTAL][i], (S_TOTAL + 1) * (-1));
-          incrstats(hand1, gs->chan, i, ls->values[S_DAILY][i], (S_DAILY + 1) * (-1));
-          incrstats(hand1, gs->chan, i, ls->values[S_WEEKLY][i], (S_WEEKLY + 1) * (-1));
-          incrstats(hand1, gs->chan, i, ls->values[S_MONTHLY][i], (S_MONTHLY + 1) * (-1));
-        }
-        if (getstats(hand1, "", "gstarted", 0)
-            < getstats(hand2, "", "gstarted", 0))
-          incrstats(hand1, "", T_LSTARTED, getstats(hand2, "", "gstarted", 0), 1);
-      }
-    }
-  }
-  if (use_userfile) {
-    for (q = get_user(&USERENTRY_HOSTS, u2); q; q = q->next)
-      addhost_by_handle(u1->handle, q->extra);
-    deluser(u2->handle);
-  } else {
-    for (h = uu2->hosts; h; h = h->next)
-      saddhost(uu1, h->mask, h->lastused);
-    delsuser(uu2->user);
-  }
+  user_merge(user1, user2);
   dprintf(idx, "Transferred stats from %s to %s and deleted %s\n", user2,
-  	  hand1, user2);
+  	  user1, user2);
   putlog(LOG_CMDS, "*", "#%s# sumuser %s %s", dcc[idx].nick, user1, user2);
   update_schannel_members();
   Context;
@@ -159,8 +98,8 @@ static int cmd_resetuser(struct userrec *u, int idx, char *par)
 static int cmd_schannel(struct userrec *u, int idx, char *par)
 {
   char *chname, spaces[50], *user, ubuf[2];
-  struct stats_chanset *chan;
-  struct stats_memberlist *m;
+  struct stats_chan *chan;
+  struct stats_member *m;
   int len = 0;
 
   Context;
@@ -176,7 +115,7 @@ static int cmd_schannel(struct userrec *u, int idx, char *par)
 	 dcc[idx].u.chat->con_chan, chname);
   if (!chname[0])
     chname = dcc[idx].u.chat->con_chan;
-  chan = findschan(chname);
+  chan = schan_find(chname);
   if (!chan) {
     if (!findchan_by_dname(chname))
       dprintf(idx, "Invalid channel: %s\n", chname);
@@ -184,7 +123,7 @@ static int cmd_schannel(struct userrec *u, int idx, char *par)
       dprintf(idx, "Channel %s is inactive\n", chname);
     return 0;
   }
-  dprintf(idx, "%d users on channel:\n", countmembers(chan->members));
+  dprintf(idx, "%d users on channel:\n", schan_members_count(&chan->members));
   sprintf(spaces, "                                                ");
   spaces[len - 4] = 0;
   dprintf(idx, "NICK%s", spaces);
@@ -193,7 +132,7 @@ static int cmd_schannel(struct userrec *u, int idx, char *par)
   dprintf(idx, "  USER%s", spaces);
   dprintf(idx, "  UHOST\n");
   spaces[HANDLEN - 4] = ' ';
-  for (m = chan->members; m; m = m->next) {
+  for (m = schan_members_getfirst(&chan->members); m; m = schan_members_getnext(&chan->members)) {
     if (m->user)
       user = m->user->user;
     else
@@ -215,6 +154,7 @@ static int cmd_swhois(struct userrec *user, int idx, char *par)
   struct stats_userlist *u;
 
   Context;
+  glob_slang = slang_find(coreslangs, default_slang);
   if (!par[0]) {
     dprintf(idx, "Usage: .swhois <stats-user>\n");
     return 0;
@@ -235,7 +175,12 @@ static void dump_suser(int idx, struct stats_userlist *u)
   struct userrec *uu;
 
   dprintf(idx, "------ %s ------\n", u->user);
-  dprintf(idx, "flags: %clist %caddhosts\n", u->list ? '+' : '-', u->addhosts ? '+' : '-');
+  dprintf(idx, "flags: %clist %caddhosts %cnostats\n",
+  		suser_list(u) ? '+' : '-',
+  		suser_addhosts(u) ? '+' : '-',
+  		suser_nostats(u) ? '+' : '-');
+  dprintf(idx, "Age: %s\n", stats_duration((now - u->created), 3));
+  dprintf(idx, "Allowed inactivity: %s\n", stats_duration(TIMETOLIVE(u), 3));
   if (u->hosts) {
     dprintf(idx, "Hosts: %s\n", u->hosts->mask);
     for (h = u->hosts->next; h; h = h->next)
@@ -264,7 +209,7 @@ static int cmd_pls_shost(struct userrec *user, int idx, char *par)
     dprintf(idx, "No such user: %s\n", suser);
     return 0;
   }
-  saddhost(u, host, now);
+  saddhost(u, host, now, now);
   dprintf(idx, "Added hostmask %s to %s.\n", host, u->user);
   update_schannel_members();
   return 0;
@@ -315,9 +260,9 @@ static int cmd_pls_suser(struct userrec *user, int idx, char *par)
     dprintf(idx, "That statuser already exists!\n");
     return 0;
   }
-  u = addsuser(suser, 1, 1);
+  u = addsuser(suser, now, now);
   if (host[0]) {
-    saddhost(u, host, now);
+    saddhost(u, host, now, now);
     putlog(LOG_MISC, "Added stats user %s with hostmask %s.", u->user, host);
   } else
     putlog(LOG_MISC, "Added stats user %s without a hostmask.", u->user);
@@ -342,8 +287,8 @@ static int cmd_mns_suser(struct userrec *user, int idx, char *par)
     dprintf(idx, "No such user.\n");
     return 0;
   }
-  delsuser(suser);
   putlog(LOG_MISC, "Deleted stats user %s.", u->user);
+  delsuser(suser);
   update_schannel_members();
   return 0;
 }
@@ -351,32 +296,28 @@ static int cmd_mns_suser(struct userrec *user, int idx, char *par)
 static int cmd_schattr(struct userrec *user, int idx, char *par)
 {
   struct stats_userlist *u;
-  char *suser, *mode1, *mode2;
+  char *suser, *mode;
 
   Context;
   suser = newsplit(&par);
-  mode1 = newsplit(&par);
-  mode2 = newsplit(&par);
-  if (!suser[0] || !mode1[0]) {
-    dprintf(idx, "Usage: .schattr <statuser> <+/-list +/-addhosts>\n");
+  if (!suser[0] || !par[0]) {
+    dprintf(idx, "Usage: .schattr <statuser> <+/-list +/-addhosts +/-nostats>\n");
     return 0;
   }
-  putlog(LOG_CMDS, "*", "#%s# schattr %s %s %s", dcc[idx].nick, suser, mode1, mode2);
+  putlog(LOG_CMDS, "*", "#%s# schattr %s %s", dcc[idx].nick, suser, par);
   u = findsuser_by_name(suser);
   if (!u) {
     dprintf(idx, "No such user.\n");
     return 0;
   }
-  if (!strcasecmp(mode1, "+list"))
-    u->list = 1;
-  else if (!strcasecmp(mode1, "-list"))
-    u->list = 0;
-  if (!strcasecmp(mode1, "+addhosts"))
-    u->addhosts = 1;
-  else if (!strcasecmp(mode1, "-addhosts"))
-    u->addhosts = 0;
-  dprintf(idx, "New settings for %s: %clist %caddhosts\n", u->user,
-          u->list ? '+' : '-', u->addhosts ? '+' : '-');
+  while (par[0]) {
+    mode = newsplit(&par);
+    if (!user_changeflag(u, mode))
+      dprintf(idx, "Unknown mode \"%s\" ignored.\n", mode);
+  }
+  dprintf(idx, "New settings for %s: %clist %caddhosts %cnostats\n", u->user,
+          suser_list(u) ? '+' : '-', suser_addhosts(u) ? '+' : '-',
+          suser_nostats(u) ? '+' : '-');
   return 0;
 }
 
@@ -391,13 +332,13 @@ static int cmd_updateschans(struct userrec *user, int idx, char *par)
 static int cmd_smatch(struct userrec *user, int idx, char *par)
 {
   char *tmp, *mask;
-  int list, addhosts, match, matches, deb;
+  int list, addhosts, nostats, match, matches, deb;
   struct stats_userlist *u;
   struct stats_hostlist *h;
 
   Context;
   mask = NULL;
-  list = addhosts = -1;
+  list = addhosts = nostats = -1;
   putlog(LOG_CMDS, "*", "#%s# smatch %s", dcc[idx].nick, par);
   while (par[0]) {
     tmp = newsplit(&par);
@@ -406,6 +347,8 @@ static int cmd_smatch(struct userrec *user, int idx, char *par)
         addhosts = (tmp[0] == '+');
       else if (!strcasecmp(tmp + 1, "list"))
         list = (tmp[0] == '+');
+      else if (!strcasecmp(tmp + 1, "nostats"))
+        nostats = (tmp[0] == '+');
       else {
         dprintf(idx, "Unknown stats-user flag: %s\n", tmp);
         return 0;
@@ -418,7 +361,7 @@ static int cmd_smatch(struct userrec *user, int idx, char *par)
       mask = tmp;
     }
   }
-  if (!mask && (list == -1) && (addhosts == -1)) {
+  if (!mask && (list == -1) && (addhosts == -1) && (nostats == -1)) {
     dprintf(idx, "Usage: .smatch [hostmask|nickmask] [+|-addhosts] [+|-list]\n");
     return 0;
   }
@@ -427,9 +370,17 @@ static int cmd_smatch(struct userrec *user, int idx, char *par)
   for (u = suserlist; u; u = u->next) {
     deb++;
     match = 0;
-    if ((list != (-1)) && (u->list != list))
+    if (list && (list != -1) && !suser_list(u))
       continue;
-    if ((addhosts != (-1)) && (u->addhosts != addhosts))
+    if (!list && suser_list(u))
+      continue;
+    if (addhosts && (addhosts != -1) && !suser_addhosts(u))
+      continue;
+    if (!addhosts && suser_addhosts(u))
+      continue;
+    if (nostats && (nostats != -1) && !suser_nostats(u))
+      continue;
+    if (!nostats && suser_nostats(u))
       continue;
     if (mask) {
       if (wild_match(mask, u->user)) {
@@ -497,7 +448,6 @@ static cmd_t mydcc[] =
 {
   {"savestats", "m", cmd_savestats, NULL},
   {"loadstats", "m", cmd_loadstats, NULL},
-  {"writewebstats", "m|-", cmd_writewebstats, NULL},
   {"purgestats", "m|-", cmd_purgestats, NULL},
   {"sumuser", "n|-", cmd_sumuser, NULL},
   {"resetuser", "m|-", cmd_resetuser, NULL},

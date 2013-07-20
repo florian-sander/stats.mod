@@ -146,7 +146,8 @@ Livestats:
 ----------
 
 If you activate livestats, your bot will listen on a specified port for
-http connections. (accessable via http://your.shell.com:8033/, for example)
+http connections. (accessable via http://your.shell.com:8033/, for example
+(depending on your configuration, you might have to use your vhost instead))
 The webfiles will then be generated on the fly. There will also be a little
 channel and user list which makes it easier for your users to browse through
 the several channel statistics of your bot.
@@ -238,6 +239,6 @@ Thanks to:
 ----------
 
 - Fabian for teaching me plenty of things
-- Johoho and Fox_Muld for various bug reports and suggestions
+- Johoho, Fox_Muld and many others for various bug reports and suggestions
 - dw for the idea of livestats and for many bug reports
 - the eggdev team for developing eggdrop

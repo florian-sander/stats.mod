@@ -1,0 +1,202 @@
+# time string (singular and plural)
+D 0 year
+D 1 years
+D 2 week
+D 3 weeks
+D 4 day
+D 5 days
+D 6 hour
+D 7 hours
+D 8 minute
+D 9 minutes
+D 10 second
+D 11 seconds
+D 12 some time
+
+1 <style type="text/css"><!--  A:link { text-decoration: none; }  A:visited { text-decoration: none;}  A:active { text-decoration: none;}  A:hover { text-decoration: underline;} --></style>
+
+10 <BODY BGCOLOR="#000000" TEXT="#1A9DFF" LINK="#00D993" VLINK="#71C2FF" ALINK="#2FFFBB">
+
+100 <?bot/?>'s Livestats
+
+105 top<?topnr/?>
+
+110 total
+111 today
+112 weekly
+113 monthly
+
+120 userlist
+121 Who's on now?
+122 misc stats
+
+130 other channels
+
+200 <?chan/?> statistics index
+
+# <title>s of toptalker pages
+300 Total top <?topnr/?> talkers on channel <?chan/?>
+301 Daily top <?topnr/?> talkers on channel <?chan/?>
+302 Weekly top <?topnr/?> talkers on channel <?chan/?>
+303 Monthly top <?topnr/?> talkers on channel <?chan/?>
+
+# heads of toptalker pages
+310 Total top <?topnr/?> talkers on channel <?chan/?>
+311 Daily top <?topnr/?> talkers on channel <?chan/?>
+312 Weekly top <?topnr/?> talkers on channel <?chan/?>
+313 Monthly top <?topnr/?> talkers on channel <?chan/?>
+
+320 Ordered by <?sorting/?> (to change it click corresponding table field).
+330 User peak: <?peak/?>
+340 No
+341 User
+342 Info
+343 Random Quote
+350 Total users: <?totalusers/?>
+360 (stats logged since <?chanstarted/?>)
+370 custom sorting
+380 graphs
+
+# <title>s of graph pages
+400 Total top <?graphnr/?> graphs on channel <?chan/?>
+401 Daily top <?graphnr/?> graphs on channel <?chan/?>
+402 Weekly top <?graphnr/?> graphs on channel <?chan/?>
+403 Monthly top <?graphnr/?> graphs on channel <?chan/?>
+
+# heads of graph pages
+410 Total top <?graphnr/?> graphs on channel <?chan/?>
+411 Daily top <?graphnr/?> graphs on channel <?chan/?>
+412 Weekly top <?graphnr/?> graphs on channel <?chan/?>
+413 Monthly top <?graphnr/?> graphs on channel <?chan/?>
+
+# self-explaining
+420 Ordered by <b><?sorting/?></b>
+430 [<?value/?> <?sorting/?> total]
+440 [others]
+450 table
+
+
+# /chan/users/
+500 users of <?chan/?>
+
+# /chan/onchan
+600 Users who are currently on <?chan/?>
+610 Currently on channel:
+620 idle time
+630 netsplitted
+640 <-- it's me ^_^
+
+# userpage title
+700 Stats for <?user/?> in <?chan/?>
+# userpage head
+710 Stats for <?user/?> in <?chan/?>
+720 ICQ#
+721 eMail
+722 Homepage
+723 Age
+730 Place
+# self-explaining...
+740 random quote:
+750 <?user/?> spoke <?userwords/?> different words today. These are the most used ones:
+760 total
+761 today
+762 this week
+763 this month
+780 edit my settings
+
+## Misc Stats
+# title
+800 Misc Stats in <?chan/?>
+# head
+810 Misc Stats of Today in <?chan/?>
+# self-explaining...
+820 Channel Load:
+825 Avergage Users
+826 Spoken Lines
+830 Today's Topics:
+835 set by <?topic_by/?> at <?topic_when/?>
+840 <?random_urls/?> random URLs
+845 last mentioned by <?url_by/?> at <?url_when/?>
+850 Most used
+855 ISPs
+856 TLDs
+860 <?random_kicks/?> random kicks
+870 Registered users spoke <?chanwords/?> different words
+875 These are the most used ones:
+
+# The last part of the misc stats, misc facts. That's how you use it:
+# F <type> <place> <text>
+F nicks 1 <a href="../users/<?user/?>/"><?user/?></a> couldn't decide which nick is the best and changed it <?value/?> times.
+F nicks 2 <a href="../users/<?user/?>/"><?user/?></a> was also curious which of his <?value/?> nicks is perfect.
+
+F kicks 1 <a href="../users/<?user/?>/"><?user/?></a> did what was necessary and kicked <?value/?> people.
+F kicks 2 The second most active punisher was <a href="../users/<?user/?>/"><?user/?></a>(<?value/?> kicks).
+
+F smileys 1 <a href="../users/<?user/?>/"><?user/?></a> had a happy day and smiled <?value/?> times.
+F smileys 2 <a href="../users/<?user/?>/"><?user/?></a> also enjoyed his/her visit with <?value/?> smileys
+
+F questions 1 <a href="../users/<?user/?>/"><?user/?></a> knows that wisdom is the real wealth and asked <?value/?> questions.
+F questions 2 <a href="../users/<?user/?>/"><?user/?></a> was also seeking for input <?value/?> times.
+
+F joins 1 <a href="../users/<?user/?>/"><?user/?></a> wasn't too sure whether he/she should stay or not and visited <?chan/?> <?value/?> times
+F joins 2 <a href="../users/<?user/?>/"><?user/?></a> is the second one who tried to get kicked for mass-joining (<?value/?> joins)
+
+F wpl 1 <a href="../users/<?user/?>/"><?user/?></a> likes long speeches and wrote an average of <?value/?> words per line.
+F wpl 2 <a href="../users/<?user/?>/"><?user/?></a> is another fan of long, expressive sentences with <?value/?> words/line.
+
+F vocables 1 <a href="../users/<?user/?>/"><?user/?></a> has the largest vocabulary with <?value/?> different words.
+F vocables 2 <a href="../users/<?user/?>/"><?user/?></a> used almost as much vocables (<?value/?>)
+
+
+1000 User Login
+1010 Username
+1020 Password
+1030 If you don't have a password set yet, you can do it now on IRC:
+1040 WARNING: This password will be transferred and stored in plaintext, so better don't use your mail password or any other important password.
+1050 Login
+1060 I forgot my password
+
+1100 Settings for <?user/?>
+1110 Age
+1115 Allowed inactivity
+1116 before account gets deleted
+1120 ICQ#
+1130 eMail
+1140 Homepage
+1150 List me in the top<?topnr/?>?
+1151 Automatically add new hosts to my account?
+1152 Publish my stats at all?
+1153 (for those concerned about privacy...)
+1160 yes
+1165 no
+1170 If you want to change your password, enter the new one below:
+1171 New Password
+1172 Confirm New Password
+1180 If you want to merge your account with another one
+1181
+1182
+
+1200 Login Error!
+1210 Your attempt to login resulted in the following error:
+
+1300 No Error !?!
+1301 User not found!
+1302 You don't have a password set! (see instructions on the login page)
+1303 Wrong Password!
+
+1400 Try again!
+
+1500 Password emailed
+1510 Your password has been emailed to you.
+
+1600 your stats password
+1610 Hello,
+1610 
+1610 seems that you've forgotten your password. I'm not a sadistic robot,
+1610 so I decided to do you a favour and send your password to you:
+1610 
+1610 	"<?password/?>"
+1610
+1610 Try not to forget it again. ^_^
+1610 
+1610 Have a nice day...

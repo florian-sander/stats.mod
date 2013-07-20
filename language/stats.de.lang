@@ -1,0 +1,80 @@
+# time string (singular and plural)
+D 0 Jahr
+D 1 Jahre
+D 2 Woche
+D 3 Wochen
+D 4 Tag
+D 5 Tage
+D 6 Stunde
+D 7 Stunden
+D 8 Minute
+D 9 Minuten
+D 10 Sekunde
+D 11 Sekunden
+D 12 etwas Zeit
+
+T minutes verschwendete Zeit
+T words Wörter
+
+# topX
+
+100 Top<?range/?>(<?sorting/?>):
+101 Heutige Top<?range/?>(<?sorting/?>):
+102 Top<?range/?> der Woche (<?sorting/?>):
+103 Top<?range/?> des Monats(<?sorting/?>):
+
+110 die inaktivsten <?range/?>(<?sorting/?>):
+111 die inaktivsten <?range/?> von heute (<?sorting/?>):
+112 die inaktivsten <?range/?> dieser Woche(<?sorting/?>):
+113 die inaktivsten <?range/?> des Monats(<?sorting/?>):
+
+120 Top <?range/?>("<?word/?>"):
+130 Last <?range/?>("<?word/?>"):
+
+# !place
+200 <?nick/?> ist auf Platz #<?place/?> von <?active_users/?>.
+201 Heute ist <?nick/?> auf Platz #<?place/?> von <?active_users/?>.
+202 Diese Woche ist <?nick/?> auf Platz #<?place/?> von <?active_users/?>.
+203 Diesen Monat ist <?nick/?> auf Platz #<?place/?> von <?active_users/?>.
+
+220 Tut mir leid, aber ich habe keine Informationen über <?nick/?>.
+221 <?nick/?>, tut mir leid, ich habe keine Informationen über Dich.
+222 Tut mir leid, aber den Channel "<?chan/?>" kenne ich nicht.
+
+# !wordstats
+300 <?user/?>s meistgenutzte Wörter:
+310 Tut mir leid, aber von <?nick/?> habe ich keine Wörter geloggt.
+
+320 Meistgenutzte Wörter in <?chan/?>:
+330 Tut mir leid, aber in <?chan/?> habe ich keinerlei Wörter geloggt.
+
+# !lastspoke
+400 Tut mir leid, aber ich habe keine Ahnung, wann <?nick/?> zuletzt etwas von sich gegeben hat. :(
+405 <?nick/?> hat zuletzt vor <?lastspoke/?> etwas von sich gegeben.
+405 <?nick/?> wurde zuletzt vor <?lastspoke/?> etwas mehr oder weniger sinnvolles von sich geben gesehen.
+
+500 Hallöchen, Du wurdest gerade als "<?user/?>" in meine Datenbank eingetragen.
+500 Von nun an werde ich alle möglichen Statistiken über Dich erstellen, wenn es Dir recht ist.
+500 Du kannst jetzt mit "/msg <?botnick/?> STATSPASS <Passwort>" ein Passwort setzen. Danach kannst
+500 Du Dich dann - wenn Du willst - auf den Statistikseiten einloggen, und deinen Account konfigurieren.
+500 Das Passwort wird übrigens im Klartext übertragen und gespeichert, also verwende möglichst nicht
+500 gerade deine PIN oder so. ^_^
+500 Die URL ist http://<?server_host/?>:<?server_port/?>
+
+1020 Tut mir leid, ich erkenne Dich nicht.
+
+1100 Du hast bereits ein Passwort gesetzt.
+1110 So geht's: /msg <?botnick/?> STATSPASS <Passwort>
+1120 Dein Passwort ist nun "<?password/?>".
+
+## /msg <bot> top10
+2030 Sorry, that is not a valid channel. Usage: top10 <chan>
+2031 Sorry, that is not a valid channel. Usage: ttop10 <chan>
+2032 Sorry, that is not a valid channel. Usage: top20 <chan>
+2033 Sorry, that is not a valid channel. Usage: ttop20 <chan>
+2034 Sorry, that is not a valid channel. Usage: place <chan>
+2035 Sorry, that is not a valid channel. Usage: tplace <chan>
+2036 Sorry, that is not a valid channel. Usage: stat <chan> [user]
+2037 Sorry, that is not a valid channel. Usage: tstat <chan> [user]
+2038 Sorry, that is not a valid channel. Usage: wordstats <chan> [user]
+2039 Sorry, that is not a valid channel. Usage: topwords <chan>

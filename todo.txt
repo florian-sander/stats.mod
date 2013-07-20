@@ -1,0 +1,48 @@
+/msg <bot> SIDENT
+
+> 2. min_lines_value: I mentioned this last time. This tcl value sets 
+> how many lines minimum to check for before calculating the WPL and 
+> IDLE stats.
+
+> 5.  Because of #4, I changed the place command so that if someone 
+> has 0 as the stat value (or less than min_lines_value), it outputs 
+> a different lang line:
+> 1019 [nick] is last.
+> This makes more sense when say, 100 users have 0 as their stat 
+> value. They are all last and shouldnt be counted!
+
+gettotal() optimieren
+
+check_desynch(): countmembers() optimieren (besser zähler in chan-struct)
+
+gethour() optimieren
+
+Mit Argo war heute nicht zu scherzen... 1 Opfer erfuhren dies auf die harte Art.
+Auch [smiley]'s Toleranz war in 0 Fällen erschöpft.
+
+TCL-Befehl um die stats von allen zu resetten.
+
+monats-reset verbessern.
+
+getstats idle
+
+17.1.2002 	schan_members_find() optimieren?
+
+23.4.2002
+> Something else I just noticed, Age  31 weeks 1 day 11 hours. But when I 
+> log into Edit my settings it shows Age: 1 day 10 hours 43 minutes.  I 
+> only set a statspass a day ago ?
+
+21.3.2002
+mal schauen, ob man den typ "minutes" nicht zu "time" umbenennen kann
+
+7.4.2002 - [20:10:56] QQ [iRC]: actions dont get logged
+
+11.5.2002
+
+hi, i thinks  there  is a little  bug in stat module,  it have some  problem with nick that contain [ ] it recognize   } {
+and  another problem with autoadd mask: *!?***@*.29-151.libero.it this mask is general most user have this mask couse  username is undefinited.
+
+das grüßen-zeugs als option in die config datei pflatschen
+
+tcl-funktion um user aufzulisten

@@ -1,0 +1,16 @@
+Now that you have Age on the webpage (I know its always been in the 
+userfile) you should add that quick little stat percentage ;)
+Age / Total Minutes gives the average of how often the user can be found 
+in the channel, Ive been doing it by script for awhile, but since you've 
+put Age in the livestats I figured I'd suggest it again :)
+
+Wenn Du ins stats.mod noch wie bei MircStats die verschiedenen Nicks der User anzeigen lassen könntest dann währe dein Stats.mod schon besser als MircStats.
+
+eggdrop userdatenbank komplett ignorierbar per option machen
+
+Suchmaschienen-Spider optional blockierbar machen.
+
+flag um user vorm löschen zu bewahren
+
+you should REALLY REALLY put a trigger to get channel peak... maybe you can 
+write a few lines to add to the tcl'z to add the trigger? plz!!! :)

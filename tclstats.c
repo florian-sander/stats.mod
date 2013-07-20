@@ -66,7 +66,7 @@ static int tcl_livestats STDVAR
   Context;
   BADARGS(2, 2, " port");
   if (!strcasecmp(argv[1], "off") || !strcasecmp(argv[1], "0")) {
-    stop_listen_livestats();
+    stop_httpd();
     return TCL_OK;
   }
   port = atoi(argv[1]);
@@ -74,7 +74,7 @@ static int tcl_livestats STDVAR
     Tcl_AppendResult(irp, "invalid port", NULL);
     return TCL_ERROR;
   }
-  start_listen_livestats(port);
+  start_httpd(port);
   return TCL_OK;
 }
 
@@ -96,29 +96,11 @@ static int tcl_resetuser STDVAR
   return TCL_OK;
 }
 
-static int tcl_loadslang STDVAR
-{
-  int ret;
-
-  Context;
-  BADARGS(2, 3, " [lang] slangfile");
-  if (argc == 3)
-    ret = loadslang(argv[1], argv[2]);
-  else
-    ret = loadslang(NULL, argv[1]);
-  if (!ret) {
-    Tcl_AppendResult(irp, "Couldn't open slang file!!!", NULL);
-    return TCL_ERROR;
-  }
-  return TCL_OK;
-}
-
 static int tcl_resetslang STDVAR
 {
   Context;
-  free_slang();
-  slangs = NULL;
-  slangchans = NULL;
+  slang_free(coreslangs);
+  coreslangs = NULL;
   return TCL_OK;
 }
 
@@ -132,22 +114,15 @@ static int tcl_getslang STDVAR
 
 static int tcl_nick2suser STDVAR
 {
-  struct stats_memberlist *m;
+  struct stats_member *m;
+
   Context;
   BADARGS(3, 3, " nick channel");
-  m = nick2suser(argv[1], argv[2]);
+  m = getschanmember(argv[1], argv[2]);
   if (m && m->user)
     Tcl_AppendResult(irp, m->user->user, NULL);
   else
     Tcl_AppendResult(irp, "*", NULL);
-  return TCL_OK;
-}
-
-static int tcl_setchanslang STDVAR
-{
-  Context;
-  BADARGS(3, 3, " channel language");
-  setchanlang(argv[1], argv[2]);
   return TCL_OK;
 }
 
@@ -171,6 +146,92 @@ static int tcl_findsuser STDVAR
   return TCL_OK;
 }
 
+static int tcl_loadstatsskin STDVAR
+{
+//  char *name, *file, *skin, *lang;
+
+  Context;
+  BADARGS(2, 2, " skinfile");
+  if (!loadskin(argv[1])) {
+    Tcl_AppendResult(irp, "Couldn't load skin!!!", NULL);
+    return TCL_ERROR;
+  } else {
+    return TCL_OK;
+  }
+}
+
+static int tcl_setchanslang STDVAR
+{
+  Context;
+  BADARGS(3, 3, " channel language");
+  chanlangs = slang_chanlang_add(chanlangs, argv[1], argv[2]);
+  return TCL_OK;
+}
+
+static int tcl_loadstatslang STDVAR
+{
+//  int ret = 0;
+  char *shortname, *longname, *filename;
+  struct slang_header *slang;
+
+  Context;
+  BADARGS(4, 4, " language description langfile");
+  shortname = argv[1];
+  longname = argv[2];
+  filename = argv[3];
+  coreslangs = slang_create(coreslangs, shortname, longname);
+  slang = slang_find(coreslangs, shortname);
+  Assert(slang);
+  if (!slang_load(slang, filename)) {
+    Tcl_AppendResult(irp, "Couldn't open slang file!!!", NULL);
+    return TCL_ERROR;
+  }
+  return TCL_OK;
+}
+
+static int tcl_schattr STDVAR
+{
+  struct stats_userlist *u;
+  int i;
+  char s[30];
+
+  BADARGS(3, 99, " user [+/-list] [+/-addhosts] ...");
+  u = findsuser_by_name(argv[1]);
+  if (!u) {
+    Tcl_AppendResult(irp, "Unknown user.", NULL);
+    return TCL_ERROR;
+  }
+  for (i = 2; i < argc; i++) {
+    if (!user_changeflag(u, argv[i])) {
+      snprintf(s, sizeof(s), "Unknown flag: %s", argv[i]);
+      Tcl_AppendResult(irp, s, NULL);
+      return TCL_ERROR;
+    }
+  }
+  return TCL_OK;
+}
+
+static int tcl_activeusers STDVAR
+{
+	globstats *gs;
+	locstats *ls;
+
+	BADARGS(1, 2, " [channel]");
+	for (gs = sdata; gs; gs = gs->next)
+	{
+		if (argc == 2)
+			if (!rfc_casecmp(argv[1], gs->chan))
+				continue;
+		for (ls = gs->local; ls; ls = ls->next)
+		{
+			if (ls->values[S_TOTAL][T_WORDS] < 1)
+				continue;
+			Tcl_AppendElement(irp, ls->user);
+		}
+	}
+	return TCL_OK;
+}
+
 static tcl_cmds mytcls[] =
 {
   {"incrstats", tcl_incrstats},
@@ -178,10 +239,13 @@ static tcl_cmds mytcls[] =
   {"livestats", tcl_livestats},
   {"resetuser", tcl_resetuser},
   {"nick2suser", tcl_nick2suser},
-  {"loadslang", tcl_loadslang},
   {"resetslang", tcl_resetslang},
   {"getslang", tcl_getslang},
   {"setchanslang", tcl_setchanslang},
   {"findsuser", tcl_findsuser},
+  {"loadstatsskin", tcl_loadstatsskin},
+  {"loadstatslang", tcl_loadstatslang},
+  {"schattr", tcl_schattr},
+  {"activeusers", tcl_activeusers},
   {0, 0}
 };

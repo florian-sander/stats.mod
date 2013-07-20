@@ -1,0 +1,76 @@
+# time string (singular and plural)
+D 0 year
+D 1 years
+D 2 week
+D 3 weeks
+D 4 day
+D 5 days
+D 6 hour
+D 7 hours
+D 8 minute
+D 9 minutes
+D 10 second
+D 11 seconds
+D 12 some time
+
+T minutes time wasted
+
+# topX
+
+100 Total Top<?range/?>(<?sorting/?>):
+101 Today's Top<?range/?>(<?sorting/?>):
+102 Weekly Top<?range/?>(<?sorting/?>):
+103 Monthly Top<?range/?>(<?sorting/?>):
+
+110 Total Last<?range/?>(<?sorting/?>):
+111 Today's Last<?range/?>(<?sorting/?>):
+112 Weekly Last<?range/?>(<?sorting/?>):
+113 Monthly Last<?range/?>(<?sorting/?>):
+
+120 Top <?range/?>("<?word/?>"):
+130 Last <?range/?>("<?word/?>"):
+
+# !place
+200 <?nick/?> is on place #<?place/?> out of <?active_users/?>.
+201 Today, <?nick/?> is on place #<?place/?> out of <?active_users/?>.
+202 This week, <?nick/?> is on place #<?place/?> out of <?active_users/?>.
+203 This month, <?nick/?> is on place #<?place/?> out of <?active_users/?>.
+
+220 Sorry, I don't have any stats about <?nick/?> in <?chan/?>.
+221 <?nick/?>, sorry, I don't have any stats about you.
+222 Sorry, I don't know the channel <?chan/?>
+
+# !wordstats
+300 Words most used by <?user/?>:
+310 Sorry, I don't have any wordstats about <?nick/?> in <?chan/?>
+320 Words most used in <?chan/?>:
+330 Sorry, I don't have any wordstats about <?nick/?> in <?chan/?>
+
+# !lastspoke
+400 Sorry, I don't know when <?nick/?> uttered a word in <?chan/?> last time.
+405 <?nick/?> last uttered a word <?lastspoke/?> ago.
+405 <?nick/?> was last monitored brabbling a more or less useful sentence <?lastspoke/?> ago.
+
+500 Hello, you've just been added to my userbase! Your username is "<?user/?>".
+500 From now on, I'll log various statistics about you, unless you stop me.
+500 If you set a password with "/msg <?botnick/?> STATSPASS <password>", you can edit the settings of your account.
+500 The password will be transfered and stored in plain-text, so please don't re-use a password for any important account.
+500 The URL of the stats-pages is http://<?server_host/?>:<?server_port/?>
+
+1020 Sorry, I don't recognize you.
+
+1100 You already have a password set.
+1110 Usage: /msg <?botnick/?> STATSPASS <password>
+1120 Password set to "<?password/?>"
+
+## /msg <bot> top10
+2030 Sorry, that is not a valid channel. Usage: top10 <chan>
+2031 Sorry, that is not a valid channel. Usage: ttop10 <chan>
+2032 Sorry, that is not a valid channel. Usage: top20 <chan>
+2033 Sorry, that is not a valid channel. Usage: ttop20 <chan>
+2034 Sorry, that is not a valid channel. Usage: place <chan>
+2035 Sorry, that is not a valid channel. Usage: tplace <chan>
+2036 Sorry, that is not a valid channel. Usage: stat <chan> [user]
+2037 Sorry, that is not a valid channel. Usage: tstat <chan> [user]
+2038 Sorry, that is not a valid channel. Usage: wordstats <chan> [user]
+2039 Sorry, that is not a valid channel. Usage: topwords <chan>

@@ -1,10 +1,20 @@
 Changes in Stats.mod: (since v1.0.1)
 --------------------
 
-1.3.3
-- fixed bug which could crash the bot in certain cases
-- links for weekly/monthly graphs were switched
-- possible length of CSS was a little bit too limited (fix by Vetinari`)
+1.4.0
+- added TEMPLATES!
+- rewrote language system
+- new command: !top (more flexible than !top10, !top20, etc)
+- new command: !last (just like !top, but shows the last x users)
+- !place now also accepts username _and_ stat-type at once as
+  parameter
+- new setting: $autoadd-min-lines
+- users can now login via WWW and change their info
+- added info: icq#
+- added filter for stupid color-codes
+- new way of expireing users
+- new command: !lastspoke
+
 
 1.3.2
 - optimized sorting functions, livestats should be faster now

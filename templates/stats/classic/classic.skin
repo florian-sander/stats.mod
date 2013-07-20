@@ -1,0 +1,29 @@
+skin classic Classic Style
+
+template root root.tpl
+template navbar navbar.tpl
+template top top.tpl classic
+template toptable toptable.tpl
+template custom_top custom_top.tpl
+template chan chan.tpl
+template 404 404.tpl
+template misc misc.tpl
+template channel_load channel_load.tpl
+template topics topics.tpl
+template urls urls.tpl
+template hosts hosts.tpl
+template kicks kicks.tpl
+template wordstats wordstats.tpl
+template facts facts.tpl
+template userlist userlist.tpl
+template user user.tpl
+template onchan onchan.tpl
+template graphs graphs.tpl
+template credits credits.tpl
+template userlogin userlogin.tpl
+template usersettings usersettings.tpl
+template login_error loginerror.tpl
+template password_emailed password_emailed.tpl
+
+slang classic.en.lang en English
+slang classic.de.lang de Deutsch

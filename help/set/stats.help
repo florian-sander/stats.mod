@@ -7,7 +7,7 @@
   show-usersonchan list-secret-chans statsfile topstats
   webdir smilies graphstats graphgif graphcolor livestats-loglevel
   livestats-log stat-reply livestats-ignore-msg livestats-ip
-  max-stat-cmds max-livestats-access
+  max-stat-cmds max-livestats-access autoadd-min-lines
 %{help=set save-stats}
 %{+n}
 ###  %bset save-stats%b <#>
@@ -145,3 +145,8 @@
 %{+n}
 ###  %bset max-livestats-access%b <n:s>
   defines the maximum number of livestats requests (n) which will be processed in s seconds
+%{help=set autoadd-min-lines}
+%{+n}
+###  %bset autoadd-min-lines%b <#>
+  minimum number of lines that a user must have spoken before he/she gets
+  autoadded (you don't want "dead" users in your database, do you?)

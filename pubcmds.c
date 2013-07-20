@@ -18,12 +18,9 @@
 
 static int nopubstats(char *chan)
 {
-  if (!chan) {
-    debug0("WARNING: nopubstats() called with NULL pointer");
-    return 1;
-  }
+  Assert(chan);
 #if EGG_IS_MIN_VER(10503)
-  if (ngetudef("nopubstats", chan))
+  if (ngetudef("nopubstats", chan) || ngetudef("nostats", chan))
     return 1;
 #endif
   return 0;
@@ -31,10 +28,7 @@ static int nopubstats(char *chan)
 
 static int quietstats(char *chan)
 {
-  if (!chan) {
-    debug0("WARNING: quietstats() called with NULL pointer");
-    return 1;
-  }
+  Assert(chan);
 #if EGG_IS_MIN_VER(10503)
   if (ngetudef("quietstats", chan))
     return 1;
@@ -42,510 +36,439 @@ static int quietstats(char *chan)
   return 0;
 }
 
-static int pub_top10(char *nick, char *host, char *hand,
-        char *channel, char *text)
+static int stat_flood()
 {
-  if (nopubstats(channel))
+  if (!maxstat_thr || !maxstat_time)
+    return 0;
+  if ((now - mstat_time) > maxstat_time) {
+    mstat_time = now;
+    mstat_thr = 0;
+  }
+  mstat_thr++;
+  if (mstat_thr > maxstat_thr)
     return 1;
-  putlog(LOG_CMDS, channel, "<<%s>> !%s! top10 %s", nick, hand, text);
-  tell_top(channel, channel, nick, text, 1, 10, 0);
-  return 1;
+  return 0;
 }
 
-static int pub_top20(char *nick, char *host, char *hand,
+static int pub_top(char *nick, char *host, char *hand,
         char *channel, char *text)
 {
+  char *toptext;
+
   if (nopubstats(channel))
     return 1;
-  putlog(LOG_CMDS, channel, "<<%s>> !%s! top20 %s", nick, hand, text);
-  tell_top(channel, channel, nick, text, 11, 20, 0);
-  return 1;
-}
-
-static int pub_ttop10(char *nick, char *host, char *hand,
-        char *channel, char *text)
-{
-  if (nopubstats(channel))
-    return 1;
-  putlog(LOG_CMDS, channel, "<<%s>> !%s! ttop10 %s", nick, hand, text);
-  tell_top(channel, channel, nick, text, 1, 10, 1);
-  return 1;
-}
-
-static int pub_ttop20(char *nick, char *host, char *hand,
-        char *channel, char *text)
-{
-  if (nopubstats(channel))
-    return 1;
-  putlog(LOG_CMDS, channel, "<<%s>> !%s! ttop20 %s", nick, hand, text);
-  tell_top(channel, channel, nick, text, 11, 20, 1);
-  return 1;
-}
-
-static void tell_top(char *channel, char *dest, char *nick, char *type, int from, int to, int today)
-{
-  char t[50], *result, *tosend, *slang, *slangtype;
-  int i, ti, pi;
-  struct stats_global *l;
-  struct stats_local *ll;
-#if EGG_IS_MIN_VER(10500)
-  struct chanset_t *chan;
-#endif
-
-  Context;
-  filt(type);
+  // check for flood
   if (stat_flood())
-    return;
-#if EGG_IS_MIN_VER(10500)
-  if (!strcasecmp(channel, dest)) {
-    chan = findchan_by_dname(dest);
-    if (chan)
-      dest = chan->name;
-  }
-#endif
-  l = findglobstats(channel);
-  if (!l) {
-    debug1("StatMod: Can't do topx for %s, no such entry in linked list", channel);
-    return;
-  }
-  if (!strncasecmp(type, "word ", 5)) {
-    tell_top_word(channel, dest, nick, type, from, to, l);
-    return;
-  }
-  if (!type[0] || (strlen(type) > 45))
-    strcpy(t, "words");
+    return 1;
+  reset_global_vars();
+  glob_slang = slang_find(coreslangs, slang_chanlang_get(chanlangs, channel));
+  putlog(LOG_CMDS, channel, "<<%s>> !%s! top %s", nick, hand, text);
+  toptext = tell_ntop(channel, text, 0);
+  if (!toptext)
+    return 1;
+  if (quietstats(channel))
+    dprintf(DP_HELP, "NOTICE %s :%s\n", nick, toptext);
   else
-    strcpy(t, type);
-  ti = slangtypetoi(t);
-  setslglobs(l->chan, l->peak[today], 0, l->started);
-  if ((ti < 0) && (ti != T_WPL) && (ti != T_IDLE)) {
-    slang = SLNOSUCHTYPE;
-    if (quietstats(dest)) { /* if dest != chan, we want a PRIVMSG anyway */
-      tosend = nmalloc(15 + strlen(nick) + strlen(slang) + 1);
-      sprintf(tosend, "NOTICE %s :%s\n", nick, slang);
-    } else {
-      tosend = nmalloc(16 + strlen(dest) + strlen(slang) + 1);
-      sprintf(tosend, "PRIVMSG %s :%s\n", dest, slang);
-    }
-    dprintf(DP_HELP, "%s", tosend);
-    nfree(tosend);
-    return;
-  }
-  sortstats(l, ti, today);
-  slglobint = to;
-  slang = getslang(1001 + today);
-  slangtype = getslangtype(t);
-  result = nmalloc(strlen(slang) + strlen(slangtype) + 1);
-  sprintf(result, slang, slangtype);
-  i = 1;
-//  pi = (T_WPL * (-1)) + TOTAL_TYPES - 1;  // THIS APPEARS WRONG... DOUBLE-CHECK LATER!!!
-  if (ti < 0)
-    pi = (ti * -1) + (TOTAL_TYPES - 1);
-  else
-    pi = ti;
-  for (ll = l->slocal[today][pi]; ll; ll = ll->snext[today][pi]) {
-    if (!listsuser(ll, channel))
-      continue;
-    if ((ti >= 0) && !ll->values[today][ti])
-      break;
-    if ((i >= from) && (i <= to)) {
-      if (ti >= 0) {
-        // how much should I alloc for an integer? *sigh*
-        // I'll just use 10... should be enough
-        result = nrealloc(result, strlen(result) + 10 + 5 + strlen(ll->user) + 10 + 1);
-        sprintf(result, "%s %d. %s(%ld)", result, i, ll->user, ll->values[today][ti]);
-      } else if (ti == T_WPL) {
-        result = nrealloc(result, strlen(result) + 10 + 5 + strlen(ll->user) + 10 + 1);
-        if (ll->values[today][T_LINES])
-          sprintf(result, "%s %d. %s(%.2f)", result, i, ll->user, (float) ll->values[today][T_WORDS] / (float) ll->values[today][T_LINES]);
-        else
-          sprintf(result, "%s %d. %s(0)", result, i, ll->user);
-      } else if (ti == T_IDLE) {
-        result = nrealloc(result, strlen(result) + 10 + 5 + strlen(ll->user) + 10 + 1);
-        if (ll->values[today][T_LINES])
-          sprintf(result, "%s %d. %s(%.2f)", result, i, ll->user, (float) ll->values[today][T_MINUTES] / (float) ll->values[today][T_LINES]);
-        else
-          sprintf(result, "%s %d. %s(0)", result, i, ll->user);
-      } else {
-        result = nrealloc(result, strlen(result) + 11 + 10 + 1);
-        sprintf(result, "%s ERROR (%d)", result, ti);
-      }
-    }
-    i++;
-  }
-  if (quietstats(dest)) {
-    tosend = nmalloc(12 + strlen(nick) + strlen(result) + 1);
-    sprintf(tosend, "NOTICE %s :%s\n", nick, result);
-  } else {
-    tosend = nmalloc(13 + strlen(dest) + strlen(result) + 1);
-    sprintf(tosend, "PRIVMSG %s :%s\n", dest, result);
-  }
-  dprintf(DP_HELP, "%s", tosend);
-  nfree(tosend);
-  nfree(result);
-  Context;
+    dprintf(DP_HELP, "PRIVMSG %s :%s\n", channel, toptext);
+  return 1;
 }
 
-static void tell_top_word(char *channel, char *dest, char *nick, char *type, int from, int to, globstats *gs)
+static int pub_last(char *nick, char *host, char *hand,
+        char *channel, char *text)
 {
-  locstats *e;
-  char *result, *tosend, *slang;
-  int i = 1, itype;
+  char *toptext;
+
+  if (nopubstats(channel))
+    return 1;
+  if (stat_flood())
+    return 1;
+  reset_global_vars();
+  glob_slang = slang_find(coreslangs, slang_chanlang_get(chanlangs, channel));
+  putlog(LOG_CMDS, channel, "<<%s>> !%s! top10 %s", nick, hand, text);
+  toptext = tell_ntop(channel, text, 1);
+  if (!toptext)
+    return 1;
+  if (quietstats(channel))
+    dprintf(DP_HELP, "NOTICE %s :%s\n", nick, toptext);
+  else
+    dprintf(DP_HELP, "PRIVMSG %s :%s\n", channel, toptext);
+  return 1;
+}
+
+static char *stats_pubcmd_reply;
+static char *tell_ntop(char *chan, char *params, int last)
+{
+  char *par, *slang, *type, *word;
+  int timerange, range, tmp, sorting, itype, place, start, len, replylen;
+  int active_users;
+  globstats *gs;
+  locstats *ls;
+
+  if (stats_pubcmd_reply) {
+    nfree(stats_pubcmd_reply);
+    stats_pubcmd_reply = NULL;
+  }
+  par = slang = type = word = NULL;
+  ls = NULL;
+  gs = NULL;
+  timerange = S_TOTAL;
+  type = "words";
+  range = 10;
+  itype = T_WORDS;
+  // get pointer to the stats struct
+  if (!(gs = findglobstats(chan))) {
+    debug1("no globstats for %s", chan);
+    return NULL;
+  }
+  glob_globstats = gs;
+  // pars through params
+  while (params[0]) {
+    par = newsplit(&params);
+    // check if param is a timerange
+    if ((tmp = get_timerange(par)) != T_ERROR)
+      timerange = tmp;
+    // still no match? Then lets check if the param
+    // is a range (top10, top20, etc...)
+    else if ((tmp = atoi(par)))
+      range = tmp;
+    // still no match? Uhm... ok, maybe this is a
+    else if ((tmp = slangtypetoi(par)) != T_ERROR) {
+      itype = tmp;
+      if (itype == T_WORD) {
+        word = newsplit(&params);
+      }
+      type = par;
+    } else
+      debug1("Unknown parameter: %s", par);
+  }
+  // init language stuff
+  glob_sorting = itype;
+  glob_range = range;
+  glob_timerange = timerange;
+
+  // use special function if user requested sorting by a special word
+  if (glob_sorting == T_WORD)
+    return tell_top_word(chan, word, range, gs);
+
+  // now sort the stats
+  sortstats(gs, itype, timerange);
+  active_users = countactivestatmembers(gs, 0, timerange,
+                        (itype >= 0) ? itype : T_LINES, 1);
+  // now get the "entry phrase" for the topX
+  if (!last)
+    slang = getslang(100 + timerange);
+  else
+    slang = getslang(110 + timerange);
+  // now allocate memory and sprintf the start of the repy into it
+  stats_pubcmd_reply = nmalloc(strlen(slang) + 1);
+  strcpy(stats_pubcmd_reply, slang);
+  // if we sorted by a special type, transform the sorting index to
+  // a usable index to access the stat-array
+  if (itype < 0)
+    sorting = (itype * -1) + (TOTAL_TYPES - 1);
+  else
+    sorting = itype;
+  // if we want to show the last users, then adjust the range
+  if (last)
+    range = active_users - range + 10;
+  start = range - 10;
+  if (start < 1)
+    start = 1;
+  place = 0;
+  for (ls = gs->slocal[timerange][sorting]; ls; ls = ls->snext[timerange][sorting]) {
+    place++;
+    if (place > range)
+      break;
+    if (itype >= 0)
+      if (!ls->values[timerange][itype])
+        break;
+    if (place >= start) {
+      replylen = strlen(stats_pubcmd_reply);
+      len = 3 + strlen(ls->user) + 10 + 6 + 1;
+      stats_pubcmd_reply = nrealloc(stats_pubcmd_reply, replylen + len);
+      if (itype >= 0)
+        snprintf(stats_pubcmd_reply + replylen, len, " %d. %s (%ld)", place, ls->user,
+                 ls->values[timerange][itype]);
+      else if (itype == T_WPL)
+        snprintf(stats_pubcmd_reply + replylen, len, " %d. %s (%.2f)", place, ls->user,
+                 ls->values[timerange][T_WORDS] ?
+                 (ls->values[timerange][T_WORDS] / ls->values[timerange][T_LINES]) :
+                 0.0);
+      else if (itype == T_IDLE)
+        snprintf(stats_pubcmd_reply + replylen, len, " %d. %s (%.2f)", place, ls->user,
+                 ls->values[timerange][T_LINES] ?
+                 (ls->values[timerange][T_MINUTES] / ls->values[timerange][T_LINES]) :
+                 0.0);
+      else
+        snprintf(stats_pubcmd_reply + replylen, len, " %d. %s (ERROR)", place, ls->user);
+    }
+  }
+  stats_pubcmd_reply = nrealloc(stats_pubcmd_reply, strlen(stats_pubcmd_reply) + 1);
+  return stats_pubcmd_reply;
+}
+
+static char *tell_top_word(char *chan, char *word, int range, globstats *gs)
+{
+  locstats *ls;
+  char buf[100], *slang;
+  int num, itype;
 
   Context;
-  newsplit(&type);
-  strlower(type);
-  setword(gs, type);
-  sortstats(gs, T_WORDS, 1);
-  slglobint = to;
-  setslglobs(gs->chan, gs->peak[S_TODAY], 0, gs->started);
-  slang = SLTOPWORD;
-  result = nmalloc(strlen(slang) + strlen(type) + 1);
-  sprintf(result, slang, type);
-  itype = (T_WORDS * (-1)) + TOTAL_TYPES - 1;
-  for (e = gs->slocal[S_TODAY][itype]; e; e = e->snext[S_TODAY][itype]) {
-    if (!listsuser(e, channel))
+  Assert(!stats_pubcmd_reply);
+
+  word = newsplit(&word);
+  strlower(word);
+  setword(gs, word);
+  glob_word = word;
+
+  sortstats(gs, T_WORD, 1);
+
+  if (range > 0)
+    slang = getslang(120); // "Top <?range?>("<?word?>"):"
+  else
+    slang = getslang(130); // Last <?range?>("<?word?>"):
+  stats_pubcmd_reply = nmalloc(strlen(slang) + 1);
+  strcpy(stats_pubcmd_reply, slang);
+  itype = (T_WORD * (-1)) + TOTAL_TYPES - 1;
+
+  if (range < 0) {
+    num = countactivestatmembers_by_word(gs, 1, 1);
+    range = num - (range * (-1));
+    if (range < 0)
+      range = num;
+  }
+
+  glob_place = 0;
+  for (ls = gs->slocal[S_TODAY][itype]; ls; ls = ls->snext[S_TODAY][itype]) {
+    if (!listsuser(ls, chan))
       continue;
-    if ((i > to) || !e->word)
+    glob_place++;
+    if ((glob_place > range) || !ls->word) {
       break;
-    if (i >= from) {
-      result = nrealloc(result, strlen(result) + 13 + 10 + strlen(e->user) + 10 + 1);
-      sprintf(result, "%s %d. %s(%d)", result, i, e->user, e->word->nr);
     }
-    i++;
+    if (glob_place >= range - 10) {
+      snprintf(buf, sizeof(buf), " %d. %s(%d)", glob_place, ls->user, ls->word->nr);
+      stats_pubcmd_reply = nrealloc(stats_pubcmd_reply, strlen(stats_pubcmd_reply) + strlen(buf) + 1);
+      strcat(stats_pubcmd_reply, buf);
+    }
   }
-  if (quietstats(dest)) {
-    tosend = nmalloc(15 + strlen(nick) + strlen(result) + 1);
-    sprintf(tosend, "NOTICE %s :%s\n", nick, result);
-  } else {
-    tosend = nmalloc(16 + strlen(dest) + strlen(result) + 1);
-    sprintf(tosend, "PRIVMSG %s :%s\n", dest, result);
-  }
-  dprintf(DP_HELP, "%s", tosend);
-  nfree(result);
-  nfree(tosend);
   Context;
+  return stats_pubcmd_reply;
 }
 
 static int pub_place(char *nick, char *host, char *hand,
         char *channel, char *text)
 {
+  char *reply;
+
   Context;
   if (nopubstats(channel))
+    return 1;
+  if (stat_flood())
     return 1;
   putlog(LOG_CMDS, channel, "<<%s>> !%s! place %s", nick, hand, text);
-  tell_place(nick, channel, hand, channel, text, S_TOTAL);
+  reply = tell_place(nick, hand, channel, text);
+  if (quietstats(channel)) {
+    dprintf(DP_HELP, "NOTICE %s :%s\n", nick, reply);
+  } else {
+    dprintf(DP_HELP, "PRIVMSG %s :%s\n", channel, reply);
+  }
+
+
   Context;
   return 1;
 }
 
-static int pub_tplace(char *nick, char *host, char *hand,
-        char *channel, char *text)
-{
-  Context;
-  if (nopubstats(channel))
-    return 1;
-  putlog(LOG_CMDS, channel, "<<%s>> !%s! tplace %s", nick, hand, text);
-  tell_place(nick, channel, hand, channel, text, S_TODAY);
-  Context;
-  return 1;
-}
-
-static void tell_place(char *nick, char *dest, char *hand, char *channel, char *text, int today)
+static char *tell_place(char *nick, char *hand, char *channel, char *text)
 {
   globstats *gs;
-  locstats *ls;
-  struct stats_memberlist *m;
+  struct stats_member *m;
   struct stats_userlist *su;
   struct userrec *u;
-  char *who, *slang;
+  char *who, *slang, *par, *type;
   int place = 0;
   int itype;
-#if EGG_IS_MIN_VER(10500)
-  struct chanset_t *chan;
-#endif
+  int itmp;
+  int today;
 
   Context;
   // at first, check for flood...
-  if (stat_flood())
-    return;
+  reset_global_vars();
+  glob_slang = slang_find(coreslangs, slang_chanlang_get(chanlangs, channel));
+  // ... get the global stat-struct for the channel ...
+  gs = findglobstats(channel);
+  if (!gs) {
+    debug1("Stats.mod: Couldn't exec !place, I don't have any statistics in %s.", channel);
+    return "NOSTATS!";
+  }
+  glob_globstats = gs;
   // .. now init vars ...
   m = NULL;
   u = NULL;
   su = NULL;
-  who = slang = NULL;
-  // ... get the global stat-struct for the channel ...
-  gs = findglobstats(channel);
-  // .. and init langsystem (stuff like peak and staring time
-  // shouldn't be needed)
-  setslglobs(channel, 0, countstatmembers(gs), 0);
-#if EGG_IS_MIN_VER(10500)
-  // make sure that we're going to send to the right chan (!sa23hCHAN is WRONG)
-  if (!strcasecmp(channel, dest)) {
-    chan = findchan_by_dname(dest);
-    if (chan)
-      dest = chan->name;
+  who = slang = type = NULL;
+  itype = T_ERROR;
+  today = S_TOTAL;
+  // parse params...
+  while (text[0]) {
+    par = newsplit(&text);
+    // maybe par is a stat-type?
+    if ((itype == T_ERROR) && ((itmp = slangtypetoi(par)) != T_ERROR))
+      itype = itmp;
+    // or an user in the stats-userbase?
+    else if (!who && (su = findsuser_by_name(par)))
+      who = su->user;
+    // or at least a user in the eggdrop userbase?
+    else if (!who && (u = get_user_by_handle(userlist, par)))
+      who = u->handle;
+    else if ((itmp = get_timerange(par)) != T_ERROR)
+      today = itmp;
+    // oh.. what now? We can't know if it's a wrong type or a non-existant user,
+    // so let's assume it is a user and return an error
+    else {
+      glob_nick = par;
+      return getslang(220); // "I don't have any stats about <?nick?>."
+    }
   }
-#endif
-  // if there is no parameter, just default to "words"
-  if (!text[0]) {
+  // if no type was specified, just default to "words"
+  if (itype == T_ERROR)
     itype = T_WORDS;
-  // else try resolving the type
-  } else {
-    itype = slangtypetoi(text);
-  }
-  // if we have a valid type now, then the parameter does not
-  // specify a username, so let's use the triggering user as target.
-  if (itype != T_ERROR) {
-    // use_userfile is true, so grab the handle
-    if (use_userfile) {
-      who = nmalloc(strlen(hand) + 1);
-      strcpy(who, hand);
+  glob_sorting = itype;
+  glob_timerange = today;
+  // if we still don't know whose place we should show, then just asume
+  // that the triggering user wants to know his own place (how selfish.. ^_^)
+  if (!who) {
+    // at first, check if we already know this user by handle
+    if (!(!strcasecmp(hand, "*"))) {
+      who = hand;
     } else {
-      // try grabbing the correct username from the userdatabase...
-      m = nick2suser(nick, channel);
-      if (m && m->user) {
-        who = nmalloc(strlen(m->user->user) + 1);
-        strcpy(who, m->user->user);
-      // if the user is not found, use "*", which identifies
-      // a non-existant user
-      } else {
-        who = nmalloc(2);
-        strcpy(who, "*");
-      }
+      // now try to get the user from the stats-userbase
+      // maybe the user is on the channel and we already found
+      // the matching username?
+      m = getschanmember(nick, channel);
+      if (m && m->user)
+        who = m->user->user;
+      // not? Ok, then this user got a problem...
+      // we _could_ check for the user's host here and try to resolve his
+      // susername this way, but I think that's not worth the effort
     }
-    // if who is "*", then the user isn't in any database. Serve him an error.
-    if (who[0] == '*') {
-      setslnick(nick);
-      if (quietstats(dest)) {
-        dprintf(DP_HELP, "NOTICE %s :%s\n", nick, SLNOSTATSABOUTYOU);
-      } else {
-        dprintf(DP_HELP, "PRIVMSG %s :%s\n", dest, SLNOSTATSABOUTYOU);
-      }
-      if (who)
-        nfree(who);
-      return;
-    }
-  } else { // itype == T_ERROR, parameter must be a username
-    itype = T_WORDS;
-    if (use_userfile) {   // grab user from egg-userfile
-      u = get_user_by_handle(userlist, text);
-      if (u) {
-        who = nmalloc(strlen(u->handle) + 1);
-        strcpy(who, u->handle);
-      } else {
-        // oops, user not found!
-        setslnick(text);
-        if (quietstats(dest)) {
-          dprintf(DP_HELP, "NOTICE %s :%s\n", nick, SLNOSTATSABOUTSOMEONE);
-        } else {
-          dprintf(DP_HELP, "PRIVMSG %s :%s\n", dest, SLNOSTATSABOUTSOMEONE);
-        }
-        // no need to free anything, we didn't allocate anything, yet
-        Assert(!who);
-        return;
-      }
-    } else {  // grab user from stats-userbase
-      // first check if nick is on chan (faster)
-      m = nick2suser(text, channel);
-      if (m && m->user) {
-        who = nmalloc(strlen(m->user->user) + 1);
-        strcpy(who, m->user->user);
-      } else {
-        // no success, yet? ok, then search through the complete database...
-        su = findsuser_by_name(text);
-        if (su) {
-          who = nmalloc(strlen(su->user) + 1);
-          strcpy(who, su->user);
-        } else {
-          // still no success? Poor user... serve him an error.
-          setslnick(text);
-          if (quietstats(dest)) {
-            dprintf(DP_HELP, "NOTICE %s :%s\n", nick, SLNOSTATSABOUTSOMEONE);
-          } else {
-            dprintf(DP_HELP, "PRIVMSG %s :%s\n", dest, SLNOSTATSABOUTSOMEONE);
-          }
-          Assert(!who);
-          return;
-        }
-      }
-    }
-  }
-  if (!gs) {
-    Assert(who);
-    nfree(who);
-    debug1("Stats.mod: Couldn't exec !place, I don't have any statistics in %s.", channel);
-    return;
-  }
-  // sort the stats
-  sortstats(gs, itype, today);
-  // if itype is < 0, get the modified itype that we need for accessing the data
-  if (itype < 0)
-    itype = (TOTAL_TYPES - 1) + (itype * -1);
-  // now calculate the place
-  for (ls = gs->slocal[today][itype]; ls; ls = ls->snext[today][itype]) {
-    if (!listsuser(ls, channel))
-      continue;
-    place++;
-    if (!rfc_casecmp(who, ls->user))
-      break;
-  }
-  // if ls is NULL now, then the user doesn't have any stats in this chan
-  if (!ls) {
-    setslnick(who);
-    if (quietstats(dest)) {
-      dprintf(DP_HELP, "NOTICE %s :%s\n", nick, SLNOSTATSABOUTSOMEONE);
-    } else {
-      dprintf(DP_HELP, "PRIVMSG %s :%s\n", dest, SLNOSTATSABOUTSOMEONE);
-    }
-  } else {
-    // stats found, so let's output them
-    setslnick(who);
-    slglobint = place;
-    // there are 4 slang-entries for today, this week, etc
-    slang = getslang(1012 + today);
-    if (quietstats(dest)) {
-      dprintf(DP_HELP, "NOTICE %s :%s\n", nick, slang);
-    } else {
-      dprintf(DP_HELP, "PRIVMSG %s :%s\n", dest, slang);
+    // still no match? Ouch! Then we probably don't have any stats about this
+    // poor user...
+    if (!who) {
+      glob_nick = nick;
+      return getslang(221); // "I don't have any stats about you."
     }
   }
   Assert(who);
-  nfree(who);
+  Assert(itype != T_ERROR);
+  Assert(gs);
+  // sort the stats
+  sortstats(gs, itype, today);
+  // and get the place of the user
+  place = getplace(gs, today, itype, who);
+  // if ls is NULL now, then the user doesn't have any stats in this chan
+  if (!place) {
+    glob_nick = who;
+    return getslang(220); // "I don't have any stats about <?nick?>."
+  } else {
+    // stats found, so let's output them
+    glob_nick = who;
+    glob_place = place;
+    // there are 4 slang-entries for today, this week, etc
+    return getslang(200 + today);
+  }
   Context;
 }
 
 static int pub_stat(char *nick, char *host, char *hand,
         char *channel, char *text)
 {
+  char *reply;
+
   Context;
+  if (stat_flood())
+    return 0;
   if (nopubstats(channel))
-    return 1;
+    return 0;
   putlog(LOG_CMDS, channel, "<<%s>> !%s! stat %s", nick, hand, text);
-  tell_stat(nick, channel, hand, channel, text, S_TOTAL);
+  reply = tell_stat(nick, channel, text);
+  Assert(reply);
+  if (quietstats(channel))
+    dprintf(DP_HELP, "NOTICE %s :%s\n", nick, reply);
+  else
+    dprintf(DP_HELP, "PRIVMSG %s :%s\n", channel, reply);
   Context;
   return 1;
 }
 
-static int pub_tstat(char *nick, char *host, char *hand,
-        char *channel, char *text)
+static char *tell_stat(char *nick, char *channel, char *text)
 {
-  Context;
-  if (nopubstats(channel))
-    return 1;
-  putlog(LOG_CMDS, channel, "<<%s>> !%s! tstat %s", nick, hand, text);
-  tell_stat(nick, channel, hand, channel, text, S_TODAY);
-  Context;
-  return 1;
-}
-
-static void tell_stat(char *nick, char *dest, char *hand, char *channel, char *text, int today)
-{
-  locstats *ls;
-  char *who, *tosend, what[128], *pwhat, *type, *dur, *stmp;
+/*
+  char *who, *tosend, , , ;
   int itype, first;
   struct stats_memberlist *m;
-  struct userrec *u;
   struct stats_userlist *su;
 #if EGG_IS_MIN_VER(10500)
   struct chanset_t *chan;
 #endif
+*/
+  char *par, *tosend, buf[50], *stmp, what[128], *pwhat, *type, *dur;
+  int i, timerange, first, itype;
+  struct stats_userlist *utmp, *user;
+  struct stats_member *member;
+  locstats *ls;
 
   Context;
-  if (stat_flood())
-    return;
-  who = tosend = type = dur = NULL;
-  setslglobs(channel, 0, 0, 0);
-#if EGG_IS_MIN_VER(10500)
-  if (!strcasecmp(channel, dest)) {
-    chan = findchan_by_dname(dest);
-    if (chan)
-      dest = chan->name;
+  if (stats_pubcmd_reply) {
+    nfree(stats_pubcmd_reply);
+    stats_pubcmd_reply = NULL;
   }
-#endif
-  if (text[0] == 0) {
-    if (use_userfile) {
-      who = nmalloc(strlen(hand) + 1);
-      strcpy(who, hand);
-    } else {
-      m = nick2suser(nick, channel);
-      if (m && m->user) {
-        who = nmalloc(strlen(m->user->user) + 1);
-        strcpy(who, m->user->user);
-      } else {
-        who = nmalloc(2);
-        strcpy(who, "*");
-      }
-    }
-  } else {
-    if (use_userfile) {   // grab user from egg-userfile
-      u = get_user_by_handle(userlist, text);
-      if (u) {
-        who = nmalloc(strlen(u->handle) + 1);
-        strcpy(who, u->handle);
-      } else {
-        // oops, user not found!
-        setslnick(text);
-        if (quietstats(dest)) {
-          dprintf(DP_HELP, "NOTICE %s :%s\n", nick, SLNOSTATSABOUTSOMEONE);
-        } else {
-          dprintf(DP_HELP, "PRIVMSG %s :%s\n", dest, SLNOSTATSABOUTSOMEONE);
-        }
-        // no need to free anything, we didn't allocate anything, yet
-        Assert(!who);
-        return;
-      }
-    } else {  // grab user from stats-userbase
-      // first check if nick is on chan (faster)
-      m = nick2suser(text, channel);
-      if (m && m->user) {
-        who = nmalloc(strlen(m->user->user) + 1);
-        strcpy(who, m->user->user);
-      } else {
-        // no success, yet? ok, then search through the complete database...
-        su = findsuser_by_name(text);
-        if (su) {
-          who = nmalloc(strlen(su->user) + 1);
-          strcpy(who, su->user);
-        } else {
-          // still no success? Poor user... serve him an error.
-          setslnick(text);
-          if (quietstats(dest)) {
-            dprintf(DP_HELP, "NOTICE %s :%s\n", nick, SLNOSTATSABOUTSOMEONE);
-          } else {
-            dprintf(DP_HELP, "PRIVMSG %s :%s\n", dest, SLNOSTATSABOUTSOMEONE);
-          }
-          Assert(!who);
-          return;
-        }
+  reset_global_vars();
+  timerange = S_TOTAL;
+  tosend = nmalloc(500);
+  tosend[0] = 0;
+  user = NULL;
+  type = dur = NULL;
+
+  glob_slang = slang_find(coreslangs, slang_chanlang_get(chanlangs, channel));
+  glob_globstats = findglobstats(channel);
+  while (text[0]) {
+    par = newsplit(&text);
+    if ((i = get_timerange(par)) != T_ERROR)
+      timerange = i;
+    else if ((utmp = findsuser_by_name(par)))
+      user = utmp;
+    else {
+      member = getschanmember(par, channel);
+      if (member && member->user && !suser_nostats(member->user))
+        user = member->user;
+      else {
+        glob_nick = par;
+        nfree(tosend);
+        return SLNOSTATSABOUTSOMEONE;
       }
     }
   }
-  setslglobs(channel, 0, 0, 0);
-  if (who[0] == '*') {
-    setslnick(nick);
-    if (quietstats(dest))
-      dprintf(DP_HELP, "NOTICE %s :%s\n", nick, SLNOSTATSABOUTYOU);
-    else
-      dprintf(DP_HELP, "PRIVMSG %s :%s\n", dest, SLNOSTATSABOUTYOU);
-    nfree(who);
-    return;
+
+  if (!user) {
+    member = getschanmember(nick, channel);
+    if (member && member->user && !suser_nostats(member->user))
+      user = member->user;
+    if (!user) {
+      nfree(tosend);
+      glob_nick = nick;
+      return SLNOSTATSABOUTYOU;
+    }
   }
-  ls = findlocstats(channel, who);
+
+
+  ls = findlocstats(channel, user->user);
+  glob_locstats = ls;
   if (!ls) {
-    setslnick(who);
-    if (quietstats(dest))
-      dprintf(DP_HELP, "NOTICE %s :%s\n", nick, SLNOSTATSABOUTSOMEONE);
-    else
-      dprintf(DP_HELP, "PRIVMSG %s :%s\n", dest, SLNOSTATSABOUTSOMEONE);
+    glob_nick = user->user;
+    nfree(tosend);
+    return SLNOSTATSABOUTSOMEONE;
   } else {
-    if (quietstats(dest)) {
-      tosend = nmalloc(14 + strlen(nick) + strlen(who) + 1);
-      sprintf(tosend, "NOTICE %s :%s:", nick, who);
-    } else {
-      tosend = nmalloc(15 + strlen(dest) + strlen(who) + 1);
-      sprintf(tosend, "PRIVMSG %s :%s:", dest, who);
-    }
     what[0] = 0;
     pwhat = what;
     strncpy(pwhat, stat_reply, 127);
@@ -559,36 +482,38 @@ static void tell_stat(char *nick, char *dest, char *hand, char *channel, char *t
       if (!first) {
         // if this isn't the first run, attach a "," to the string to
         // seperate the values.
-        tosend = nrealloc(tosend, strlen(tosend) + 1 + 1);
-        strcat(tosend, ",");
+        strncat(tosend, ",", 500);
       } else {
         first = 0;
       }
       if (itype == T_MINUTES) {
-        dur = stats_duration(ls->values[today][T_MINUTES] * 60);
+        dur = stats_duration(ls->values[timerange][T_MINUTES] * 60, 6);
         stmp = getslangtype("minutes");
-        tosend = nrealloc(tosend, strlen(tosend) + 3 + strlen(stmp) + strlen(dur) + 1);
-        sprintf(tosend, "%s %s: %s", tosend, stmp, dur);
+        snprintf(buf, sizeof(buf), " %s: %s", stmp, dur);
+        strncat(tosend, buf, 500);
       } else if (itype >= 0) {
         // same as usual: use 10 bytes for the integer-string
         stmp = getslangtype(type);
-        tosend = nrealloc(tosend, 8 + strlen(tosend) + 10 + strlen(stmp));
-        sprintf(tosend, "%s %ld %s", tosend, ls->values[today][itype], stmp);
-      } else if ((itype == T_WPL) && (ls->values[today][T_LINES] != 0)) {
+        snprintf(buf, sizeof(buf), " %ld %s", ls->values[timerange][itype], stmp);
+        strncat(tosend, buf, 500);
+      } else if ((itype == T_WPL) && (ls->values[timerange][T_LINES] != 0)) {
         stmp = getslangtype("wpl");
-        tosend = nrealloc(tosend, strlen(tosend) + 2 + 10 + strlen(stmp) + 1);
-        sprintf(tosend, "%s %.2f %s", tosend, (float) ls->values[today][T_WORDS] / (float) ls->values[today][T_LINES], stmp);
-      } else if ((itype == T_IDLE) && (ls->values[today][T_LINES] != 0)) {
+        // Thanks to Algirdas 'QQ' Kepezinskas for tracking down
+        // the bug which was placed in this line.
+        snprintf(buf, sizeof(buf), " %.2f %s", (float) ls->values[timerange][T_WORDS] / (float) ls->values[timerange][T_LINES], stmp);
+        strncat(tosend, buf, 500);
+      } else if ((itype == T_IDLE) && (ls->values[timerange][T_LINES] != 0)) {
         stmp = getslangtype("idle");
-        tosend = nrealloc(tosend, strlen(tosend) + 2 + 10 + strlen(stmp) + 1);
-        sprintf(tosend, "%s %.2f %s", tosend, (float) ls->values[today][T_MINUTES] / (float) ls->values[today][T_LINES], stmp);
+        snprintf(buf, sizeof(buf), " %.2f %s", (float) ls->values[timerange][T_MINUTES] / (float) ls->values[timerange][T_LINES], stmp);
+        strncat(tosend, buf, 500);
       }
     }
-    dprintf(DP_HELP, "%s.\n", tosend);
-    nfree(tosend);
   }
-  nfree(who);
-  Context;
+  i = strlen(user->user) + 2 + strlen(tosend) + 1;
+  stats_pubcmd_reply= nmalloc(i);
+  snprintf(stats_pubcmd_reply, i, "%s: %s", user->user, tosend);
+  nfree(tosend);
+  return stats_pubcmd_reply;
 }
 
 static int pub_wordstats(char *nick, char *host, char *hand,
@@ -615,7 +540,8 @@ static void tell_wordstats(char *nick, char *dest, char *hand, char *channel, ch
 
 
   Context;
-  filt(text);
+  reset_global_vars();
+  glob_slang = slang_find(coreslangs, slang_chanlang_get(chanlangs, channel));
   if (stat_flood())
     return;
 #if EGG_IS_MIN_VER(10500)
@@ -632,9 +558,8 @@ static void tell_wordstats(char *nick, char *dest, char *hand, char *channel, ch
     who = nmalloc(strlen(text) + 1);
     strcpy(who, text);
   }
-  setslglobs(channel, 0, 0, 0);
   if (who[0] == '*') {
-    setslnick(nick);
+    glob_nick = nick;
     if (quietstats(dest))
       dprintf(DP_HELP, "NOTICE %s :%s\n", nick, SLNOSTATSABOUTYOU);
     else
@@ -643,16 +568,16 @@ static void tell_wordstats(char *nick, char *dest, char *hand, char *channel, ch
     return;
   }
   ls = findlocstats(channel, who);
+  glob_locstats = ls;
   if (!ls) {
-    setslnick(who);
+    glob_nick = who;
     if (quietstats(dest))
       dprintf(DP_HELP, "NOTICE %s :%s\n", nick, SLNOSTATSABOUTSOMEONE);
     else
       dprintf(DP_HELP, "PRIVMSG %s :%s\n", dest, SLNOSTATSABOUTSOMEONE);
   } else {
-    slgloblocstats = ls;
     if (!ls->words) {
-      setslnick(who);
+      glob_nick = who;
       if (quietstats(dest))
         dprintf(DP_HELP, "NOTICE %s :%s\n", nick, SLNOWORDSTATS);
       else
@@ -708,6 +633,8 @@ static void tell_topwords(char *nick, char *dest, char *hand, char *channel)
   Context;
   if (stat_flood())
     return;
+  reset_global_vars();
+  glob_slang = slang_find(coreslangs, slang_chanlang_get(chanlangs, channel));
 #if EGG_IS_MIN_VER(10500)
   if (!strcasecmp(channel, dest)) {
     chan = findchan_by_dname(dest);
@@ -716,24 +643,20 @@ static void tell_topwords(char *nick, char *dest, char *hand, char *channel)
   }
 #endif
   gs = findglobstats(channel);
+  glob_globstats = gs;
   if (!gs) {
-    if (quietstats(dest))
-      dprintf(DP_HELP, "NOTICE %s :I don't have any stats in %s\n", nick, channel);
-    else
-      dprintf(DP_HELP, "PRIVMSG %s :%s, I don't have any stats in %s\n", dest, nick, channel);
     return;
   }
   do_globwordstats(gs);
   ws = gs->words;
   if (!ws) {
     if (quietstats(dest))
-      dprintf(DP_HELP, "NOTICE %s :I don't have any wordstats in %s\n", nick, channel);
+      dprintf(DP_HELP, "NOTICE %s :I don't have any wordstats in %s\n", nick, SLNOCHANWORDSTATS);
     else
-      dprintf(DP_HELP, "PRIVMSG %s :I don't have any wordstats in %s\n", dest, channel);
+      dprintf(DP_HELP, "PRIVMSG %s :I don't have any wordstats in %s\n", dest, SLNOCHANWORDSTATS);
     return;
   }
-  setslglobs(gs->chan, gs->peak[S_TODAY], 0, gs->started);
-  setslnick(nick);
+  glob_nick = nick;
   slang = SLCHANSMOSTUSEDWORDS;
   if (quietstats(dest)) {
     tosend = nmalloc(13 + strlen(nick) + strlen(slang) + 1);
@@ -754,31 +677,63 @@ static void tell_topwords(char *nick, char *dest, char *hand, char *channel)
   Context;
 }
 
-static int stat_flood()
+static char *cmd_lastspoke(char *chan, char *text)
 {
-  if (!maxstat_thr || !maxstat_time)
-    return 0;
-  if ((now - mstat_time) > maxstat_time) {
-    mstat_time = now;
-    mstat_thr = 0;
+  char *user;
+  globstats gs;
+
+  if (stats_pubcmd_reply) {
+    nfree(stats_pubcmd_reply);
+    stats_pubcmd_reply = NULL;
   }
-  mstat_thr++;
-  if (mstat_thr > maxstat_thr)
+  reset_global_vars();
+  glob_slang = slang_find(coreslangs, slang_chanlang_get(chanlangs, chan));
+
+  user = newsplit(&text);
+  glob_nick = user;
+  glob_globstats = findglobstats(chan);
+  glob_locstats = findlocstats(chan, user);
+  if (!glob_locstats)  {
+    if (!glob_globstats) {
+      globstats_init(&gs);
+      gs.chan = chan;
+    }
+    return getslang(220);
+  }
+  if (!glob_locstats->lastspoke)
+    return getslang(400);
+  return getslang(405);
+}
+
+static int pub_lastspoke(char *nick, char *host, char *hand,
+        char *channel, char *text)
+{
+  char *reply;
+
+  Context;
+  if (nopubstats(channel))
     return 1;
-  return 0;
+  if (stat_flood())
+    return 1;
+  putlog(LOG_CMDS, channel, "<<%s>> !%s! lastspoke %s", nick, hand, text);
+  reply = cmd_lastspoke(channel, text);
+  if (quietstats(channel)) {
+    dprintf(DP_HELP, "NOTICE %s :%s\n", nick, reply);
+  } else {
+    dprintf(DP_HELP, "PRIVMSG %s :%s\n", channel, reply);
+  }
+  Context;
+  return 1;
 }
 
 static cmd_t stats_pub[] =
 {
-  {"!top10", "", pub_top10, 0},
-  {"!ttop10", "", pub_ttop10, 0},
-  {"!top20", "", pub_top20, 0},
-  {"!ttop20", "", pub_ttop20, 0},
   {"!place", "", pub_place, 0},
-  {"!tplace", "", pub_tplace, 0},
   {"!stat", "", pub_stat, 0},
-  {"!tstat", "", pub_tstat, 0},
   {"!wordstats", "", pub_wordstats, 0},
   {"!topwords", "", pub_topwords, 0},
+  {"!top", "", pub_top, 0},
+  {"!last", "", pub_last, 0},
+  {"!lastspoke", "", pub_lastspoke, 0},
   {0, 0, 0, 0}
 };

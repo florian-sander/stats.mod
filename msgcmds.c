@@ -30,107 +30,26 @@ static int validchan(char *chan)
   return 0;
 }
 
-static int msg_top10 (char *nick, char *uhost, struct userrec *u, char *rest)
-{
-  char *chan;
-
-  Context;
-  setslglobs("", 0, 0, 0);
-  setslnick(nick);
-  chan = newsplit(&rest);
-  if (!validchan(chan)) {
-    dprintf(DP_HELP, "PRIVMSG %s :%s\n", nick, getslang(2030));
-    return 1;
-  }
-  putlog(LOG_CMDS, "*", "(%s!%s) !%s! top10 %s %s", nick, uhost, u ? u->handle : "*", chan, rest);
-  tell_top(chan, nick, nick, rest, 1, 10, 0);
-  return 1;
-}
-
-static int msg_ttop10 (char *nick, char *uhost, struct userrec *u, char *rest)
-{
-  char *chan;
-
-  Context;
-  setslglobs("", 0, 0, 0);
-  setslnick(nick);
-  chan = newsplit(&rest);
-  if (!validchan(chan)) {
-    dprintf(DP_HELP, "PRIVMSG %s :%s\n", nick, getslang(2031));
-    return 1;
-  }
-  putlog(LOG_CMDS, "*", "(%s!%s) !%s! ttop10 %s %s", nick, uhost, u ? u->handle : "*", chan, rest);
-  tell_top(chan, nick, nick, rest, 1, 10, 1);
-  return 1;
-}
-
-static int msg_top20 (char *nick, char *uhost, struct userrec *u, char *rest)
-{
-  char *chan;
-
-  Context;
-  setslglobs("", 0, 0, 0);
-  setslnick(nick);
-  chan = newsplit(&rest);
-  if (!validchan(chan)) {
-    dprintf(DP_HELP, "PRIVMSG %s :%s\n", nick, getslang(2032));
-    return 1;
-  }
-  putlog(LOG_CMDS, "*", "(%s!%s) !%s! top20 %s %s", nick, uhost, u ? u->handle : "*", chan, rest);
-  tell_top(chan, nick, nick, rest, 11, 20, 0);
-  return 1;
-}
-
-static int msg_ttop20 (char *nick, char *uhost, struct userrec *u, char *rest)
-{
-  char *chan;
-
-  Context;
-  setslglobs("", 0, 0, 0);
-  setslnick(nick);
-  chan = newsplit(&rest);
-  if (!validchan(chan)) {
-    dprintf(DP_HELP, "PRIVMSG %s :%s\n", nick, getslang(2033));
-    return 1;
-  }
-  putlog(LOG_CMDS, "*", "(%s!%s) !%s! ttop20 %s %s", nick, uhost, u ? u->handle : "*", chan, rest);
-  tell_top(chan, nick, nick, rest, 11, 20, 1);
-  return 1;
-}
-
 static int msg_place(char *nick, char *uhost, struct userrec *u,
         char *rest)
 {
-  char *chan;
+  char *chan, *reply;
 
   Context;
-  setslglobs("", 0, 0, 0);
-  setslnick(nick);
+  // check for flood
+  if (stat_flood())
+    return 1;
+  reset_global_vars();
+  glob_nick = nick;
   chan = newsplit(&rest);
+  glob_slang = slang_find(coreslangs, slang_chanlang_get(chanlangs, chan));
+  putlog(LOG_CMDS, "*", "(%s!%s) !%s! place %s %s", nick, uhost, u ? u->handle : "*", chan, rest);
   if (!validchan(chan)) {
     dprintf(DP_HELP, "PRIVMSG %s :%s\n", nick, getslang(2034));
     return 1;
   }
-  putlog(LOG_CMDS, "*", "(%s!%s) !%s! place %s %s", nick, uhost, u ? u->handle : "*", chan, rest);
-  tell_place(nick, nick, u ? u->handle : "*", chan, rest, S_TOTAL);
-  return 1;
-}
-
-static int msg_tplace(char *nick, char *uhost, struct userrec *u,
-        char *rest)
-{
-  char *chan;
-
-  Context;
-  setslglobs("", 0, 0, 0);
-  setslnick(nick);
-  chan = newsplit(&rest);
-  if (!validchan(chan)) {
-    dprintf(DP_HELP, "PRIVMSG %s :%s\n", nick, getslang(2035));
-    return 1;
-  }
-  putlog(LOG_CMDS, "*", "(%s!%s) !%s! tplace %s %s", nick, uhost, u ? u->handle : "*", chan, rest);
-  tell_place(nick, nick, u ? u->handle : "*", chan, rest, S_TODAY);
+  reply = tell_place(nick, u ? u->handle : "*", chan, rest);
+  dprintf(DP_HELP, "PRIVMSG %s :%s\n", nick, reply);
   return 1;
 }
 
@@ -140,33 +59,65 @@ static int msg_stat(char *nick, char *uhost, struct userrec *u,
   char *chan;
 
   Context;
-  setslglobs("", 0, 0, 0);
-  setslnick(nick);
+  // check for flood
+  if (stat_flood())
+    return 1;
+  reset_global_vars();
+  glob_nick = nick;
   chan = newsplit(&rest);
+  glob_slang = slang_find(coreslangs, slang_chanlang_get(chanlangs, chan));
   if (!validchan(chan)) {
     dprintf(DP_HELP, "PRIVMSG %s :%s\n", nick, getslang(2036));
     return 1;
   }
   putlog(LOG_CMDS, "*", "(%s!%s) !%s! stat %s %s", nick, uhost, u ? u->handle : "*", chan, rest);
-  tell_stat(nick, nick, u ? u->handle : "*", chan, rest, S_TOTAL);
+  dprintf(DP_HELP, "PRIVMSG %s :%s\n", nick, tell_stat(nick, chan, rest));
   return 1;
 }
 
-static int msg_tstat(char *nick, char *uhost, struct userrec *u,
+static int msg_top(char *nick, char *uhost, struct userrec *u,
         char *rest)
 {
-  char *chan;
+  char *chan, *toptext;
 
   Context;
-  setslglobs("", 0, 0, 0);
-  setslnick(nick);
+  // check for flood
+  if (stat_flood())
+    return 1;
+  reset_global_vars();
+  glob_nick = nick;
   chan = newsplit(&rest);
+  glob_slang = slang_find(coreslangs, slang_chanlang_get(chanlangs, chan));
   if (!validchan(chan)) {
-    dprintf(DP_HELP, "PRIVMSG %s :%s\n", nick, getslang(2037));
+    dprintf(DP_HELP, "PRIVMSG %s :%s\n", nick, getslang(2036));
     return 1;
   }
-  putlog(LOG_CMDS, "*", "(%s!%s) !%s! tstat %s %s", nick, uhost, u ? u->handle : "*", chan, rest);
-  tell_stat(nick, nick, u ? u->handle : "*", chan, rest, S_TODAY);
+  putlog(LOG_CMDS, "*", "(%s!%s) !%s! top %s %s", nick, uhost, u ? u->handle : "*", chan, rest);
+  toptext = tell_ntop(chan, rest, 0);
+  dprintf(DP_HELP, "PRIVMSG %s :%s\n", nick, toptext ? toptext : "ERROR");
+  return 1;
+}
+
+static int msg_last(char *nick, char *uhost, struct userrec *u,
+        char *rest)
+{
+  char *chan, *toptext;
+
+  Context;
+  // check for flood
+  if (stat_flood())
+    return 1;
+  reset_global_vars();
+  glob_nick = nick;
+  chan = newsplit(&rest);
+  glob_slang = slang_find(coreslangs, slang_chanlang_get(chanlangs, chan));
+  if (!validchan(chan)) {
+    dprintf(DP_HELP, "PRIVMSG %s :%s\n", nick, getslang(2036));
+    return 1;
+  }
+  putlog(LOG_CMDS, "*", "(%s!%s) !%s! last %s %s", nick, uhost, u ? u->handle : "*", chan, rest);
+  toptext = tell_ntop(chan, rest, 1);
+  dprintf(DP_HELP, "PRIVMSG %s :%s\n", nick, toptext ? toptext : "ERROR");
   return 1;
 }
 
@@ -176,8 +127,10 @@ static int msg_wordstats(char *nick, char *uhost, struct userrec *u,
   char *chan;
 
   Context;
-  setslglobs("", 0, 0, 0);
-  setslnick(nick);
+  // check for flood
+  if (stat_flood())
+    return 1;
+  glob_nick = nick;
   chan = newsplit(&rest);
   if (!validchan(chan)) {
     dprintf(DP_HELP, "PRIVMSG %s :%s\n", nick, getslang(2038));
@@ -194,8 +147,9 @@ static int msg_topwords(char *nick, char *uhost, struct userrec *u,
   char *chan;
 
   Context;
-  setslglobs("", 0, 0, 0);
-  setslnick(nick);
+  // check for flood
+  if (stat_flood())
+    return 1;
   chan = newsplit(&rest);
   if (!validchan(chan)) {
     dprintf(DP_HELP, "PRIVMSG %s :%s\n", nick, getslang(2039));
@@ -206,14 +160,15 @@ static int msg_topwords(char *nick, char *uhost, struct userrec *u,
   return 1;
 }
 
-static int msg_setemail(char *nick, char *uhost, struct userrec *user, char *rest)
+static int msg_statspass(char *nick, char *uhost, struct userrec *user, char *rest)
 {
   struct stats_userlist *u;
-  char *host;
+  char *pass, *host;
 
-  Context;
-  setslglobs("", 0, 0, 0);
-  setslnick(nick);
+  putlog(LOG_CMDS, "*", "(%s!%s) !%s! STATSPASS %s", nick, uhost, user ? user->handle : "*", rest);
+  reset_global_vars();
+  glob_slang = slang_getbynick(coreslangs, nick);
+  glob_nick = nick;
   if (user)
     u = findsuser_by_name(user->handle);
   else {
@@ -223,68 +178,57 @@ static int msg_setemail(char *nick, char *uhost, struct userrec *user, char *res
     nfree(host);
   }
   if (!u) {
-    dprintf(DP_HELP, "PRIVMSG %s :%s\n", nick, SLDONTRECOGNIZE);
+    dprintf(DP_HELP, "NOTICE %s :%s\n", nick, SLDONTRECOGNIZE);
     return 1;
   }
-  if (strchr(rest, ' ')) {
-    dprintf(DP_HELP, "PRIVMSG %s :%s\n", nick, SLEMAILUSAGE);
+  glob_user = u;
+  if (u->password) {
+    dprintf(DP_HELP, "NOTICE %s :%s\n", nick, SLPASSALREADYSET);
     return 1;
   }
-  setemail(u, rest);
-  dprintf(DP_HELP, "PRIVMSG %s :%s\n", nick, SLSETEMAIL);
+  pass = newsplit(&rest);
+  if (!pass[0]) {
+    dprintf(DP_HELP, "NOTICE %s :%s\n", nick, SLPASSUSAGE);
+    return 1;
+  }
+  setpassword(u, pass);
+  dprintf(DP_HELP, "NOTICE %s :%s\n", nick, SLPASSSET);
   return 1;
 }
 
-static int msg_sethomepage(char *nick, char *uhost, struct userrec *user, char *rest)
+static int msg_lastspoke(char *nick, char *uhost, struct userrec *u,
+        char *rest)
 {
-  struct stats_userlist *u;
-  char *host, *url;
+  char *chan, *reply;
+  globstats gs;
 
   Context;
-  setslglobs("", 0, 0, 0);
-  setslnick(nick);
-  if (user)
-    u = findsuser_by_name(user->handle);
-  else {
-    host = nmalloc(strlen(nick) + 1 + strlen(uhost) + 1);
-    sprintf(host, "%s!%s", nick, uhost);
-    u = findsuser(host);
-    nfree(host);
-  }
-  if (!u) {
-    dprintf(DP_HELP, "PRIVMSG %s :%s\n", nick, SLDONTRECOGNIZE);
+  // check for flood
+  if (stat_flood())
+    return 1;
+  chan = newsplit(&rest);
+  putlog(LOG_CMDS, "*", "(%s!%s) !%s! lastspoke %s %s", nick, uhost, u ? u->handle : "*", chan, rest);
+  if (!validchan(chan)) {
+    globstats_init(&gs);
+    gs.chan = chan;
+    dprintf(DP_HELP, "PRIVMSG %s :%s\n", nick, getslang(222));
     return 1;
   }
-  if (strchr(rest, ' ')) {
-    dprintf(DP_HELP, "PRIVMSG %s :%s\n", nick, SLHPUSAGE);
-    return 1;
-  }
-  if (strncasecmp(rest, "http://", 7)) {
-    url = nmalloc(7 + strlen(rest) + 1);
-    sprintf(url, "http://%s", rest);
-  } else {
-    url = nmalloc(strlen(rest) + 1);
-    strcpy(url, rest);
-  }
-  sethomepage(u, url);
-  nfree(url);
-  dprintf(DP_HELP, "PRIVMSG %s :%s\n", nick, SLSETHOMEPAGE);
+  reply = cmd_lastspoke(chan, rest);
+  dprintf(DP_HELP, "PRIVMSG %s :%s\n", nick, reply);
   return 1;
 }
 
 static cmd_t stats_msg[] =
 {
-  {"top10", "", msg_top10, 0},
-  {"ttop10", "", msg_ttop10, 0},
-  {"top20", "", msg_top20, 0},
-  {"ttop20", "", msg_ttop20, 0},
   {"place", "", msg_place, 0},
-  {"tplace", "", msg_tplace, 0},
   {"stat", "", msg_stat, 0},
-  {"tstat", "", msg_tstat, 0},
   {"wordstats", "", msg_wordstats, 0},
   {"topwords", "", msg_topwords, 0},
-  {"setemail", "", msg_setemail, 0},
-  {"sethomepage", "", msg_sethomepage, 0},
+  {"statspass", "", msg_statspass, 0},
+  {"statpass", "", msg_statspass, 0},
+  {"lastspoke", "", msg_lastspoke, 0},
+  {"top", "", msg_top, 0},
+  {"last", "", msg_last, 0},
   {0, 0, 0, 0}
 };
