@@ -9,4 +9,4 @@ this module, so please be fair.
 
 <?-- <hr color="#3366cc" size="1" width="50%"> --?>
 <hr size="1" width="50%">
-<center>Created by <a href="http://www.visions-of-fantasy.de/stats.mod/">Stats.mod v<?module_version/?></a></center>
+<center>Created by <a href="http://www.kreativrauschen.de/stats.mod/">Stats.mod v<?module_version/?></a></center>
