@@ -170,7 +170,7 @@ static int ismonday()
 /* maskstricthost():
  * basically the same as maskhost() from src/misc.c, but _never_ stripts
  * "~+-^=" off the host
- * maskhost() version: * $Id: misc.c,v 1.30 2000/10/27 19:27:32 fabian Exp $
+ * maskhost() version: * $Id: misc.c,v 1.1 2005/04/08 13:48:30 Administrator Exp $
  */
 static void maskstricthost(const char *s, char *nw)
 {

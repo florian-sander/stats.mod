@@ -304,7 +304,7 @@ static void http_activity(int idx, char *buf, int len)
 #endif
   int lev, content_length;
   struct timeval t;
-  double pre_time;
+  double pre_time, post_time;
 
   debug2("%s: %s", dcc[idx].host, buf);
 
@@ -388,9 +388,12 @@ static void http_activity(int idx, char *buf, int len)
       debug0("now sending...");
       gettimeofday(&t, NULL);
       pre_time = (float) t.tv_sec + (((float) t.tv_usec) / 1000000);
+      debug1("pre-time: %.3f", pre_time);
       process_get_request(idx);
       gettimeofday(&t, NULL);
-      debug1("Processing time: %.3f", ((float) t.tv_sec + (((float) t.tv_usec) / 1000000)) - pre_time);
+      post_time = ((float) t.tv_sec + (((float) t.tv_usec) / (float) 1000000));
+      debug1("post-time: %.3f", post_time);
+      debug1("Processing time: %.3f",  post_time - pre_time);
       dcc[idx].status = 1;
 #ifndef OLDBOT
       /* If there's no data in our socket, we immediately get rid of it.

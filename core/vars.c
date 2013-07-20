@@ -69,3 +69,4 @@ static int expire_base = 7;	/* Minimum time before user gets deleted */
 static int expire_factor = 25;	/* percent value which defines how much of
 				   a user's "age" he can stay away without
 				   being expired */
+static int greet_new_users = 1; /* send a welcome message to new users? */

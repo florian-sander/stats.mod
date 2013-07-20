@@ -31,7 +31,7 @@
 
 #define MAKING_STATS
 #define MODULE_NAME "stats"
-#define MODULE_VERSION "1.4.0 dev20"
+#define MODULE_VERSION "1.4.0 dev21"
 #ifndef NO_EGG
 #include "../module.h"
 #include "../irc.mod/irc.h"
@@ -111,176 +111,6 @@ static int stats_expmem()
 {
 	return 0;
 }
-
-/*
-static int stats_expmem()
-{
-  int size = 0;
-
-  Context;
-#ifdef DYNAMIC_MEM_DEBUG
-  return 0;
-#endif
-  size += stats_globstats_expmem(sdata);
-  Context;
-  size += suserlist_expmem(suserlist);
-  size += llist_expmem(&schanset);
-  size += expmem_templates();
-  size += expmem_httpd();
-  size += expmem_global_vars();
-  size += slang_glob_expmem();
-  size += slang_expmem(coreslangs);
-  size += slang_chanlang_expmem(chanlangs);
-  if (stats_pubcmd_reply)
-    size += strlen(stats_pubcmd_reply) + 1;
-  return size;
-}
-
-static int stats_globstats_expmem(struct stats_global *gs)
-{
-  int size = 0;
-
-  while (gs) {
-    size += sizeof(struct stats_global);
-    size += strlen(gs->chan) + 1;
-    size += localstats_expmem(gs->local);
-    size += wordstats_expmem(gs->words);
-    size += topics_expmem(gs->topics);
-    size += urls_expmem(gs->urls);
-    size += hosts_expmem(gs->hosts);
-    size += quotes_expmem(gs->log);
-    size += kicks_expmem(gs->kicks);
-    gs = gs->next;
-  }
-  return size;
-}
-
-static int suserlist_expmem(struct stats_userlist *e)
-{
-  int size = 0;
-
-  Context;
-  while (e) {
-    size += stats_userlist_expmem_entry(e);
-    e = e->next;
-  }
-  return size;
-}
-
-static int hostlist_expmem(struct stats_hostlist *e)
-{
-  int size = 0;
-
-  Context;
-  while (e) {
-    size += sizeof(struct stats_hostlist);
-    size += strlen(e->mask) + 1;
-    e = e->next;
-  }
-  return size;
-}
-
-static int localstats_expmem(struct stats_local *sl)
-{
-  int size = 0;
-
-  Context;
-  while (sl) {
-    size += sizeof(struct stats_local);
-    size += strlen(sl->user) + 1;
-    size += wordstats_expmem(sl->words);
-    size += quotes_expmem(sl->quotes);
-    sl = sl->next;
-  }
-  Context;
-  return size;
-}
-
-static int wordstats_expmem(wordstats *l)
-{
-  int size = 0;
-
-  Context;
-  while (l) {
-    size += strlen(l->word) + 1;
-    size += sizeof(wordstats);
-    l = l->next;
-  }
-  return size;
-}
-
-static int quotes_expmem(quotestr *l)
-{
-  int size = 0;
-
-  Context;
-  while (l) {
-    size += strlen(l->quote) + 1;
-    size += sizeof(quotestr);
-    l = l->next;
-  }
-  return size;
-}
-
-static int topics_expmem(topicstr *e)
-{
-  int size = 0;
-
-  Context;
-  while (e) {
-    size += strlen(e->topic) + 1;
-    size += strlen(e->by) + 1;
-    size += sizeof(topicstr);
-    e = e->next;
-  }
-  return size;
-}
-
-static int urls_expmem(struct stats_url *e)
-{
-  int size = 0;
-
-  Context;
-  while (e) {
-    size += strlen(e->url) + 1;
-    size += strlen(e->by) + 1;
-    size += sizeof(struct stats_url);
-    e = e->next;
-  }
-  return size;
-}
-
-static int kicks_expmem(struct stats_kick *e)
-{
-  int size = 0;
-
-  Context;
-  while (e) {
-    size += sizeof(struct stats_kick);
-    size += quotes_expmem(e->log);
-    e = e->next;
-  }
-  return size;
-}
-
-static int hosts_expmem(hoststr *e)
-{
-  int size = 0;
-
-  Context;
-  while (e) {
-    size += strlen(e->host) + 1;
-    size += sizeof(hoststr);
-    e = e->next;
-  }
-  return size;
-}
-*/
-
-
-
-
-
 
 /* a report on the module status */
 static void stats_report(int idx, int details)
@@ -365,6 +195,7 @@ static tcl_ints my_tcl_ints[] =
   {"min-lines", &min_lines, 0},
   {"expire-base", &expire_base, 0},
   {"expire-factor", &expire_factor, 0},
+  {"greet-new-users", &greet_new_users, 0},
   {0, 0, 0}
 };
 

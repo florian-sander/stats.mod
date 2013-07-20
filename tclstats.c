@@ -232,6 +232,34 @@ static int tcl_activeusers STDVAR
 	return TCL_OK;
 }
 
+static int tcl_suserlist STDVAR
+{
+	struct stats_userlist *user;
+
+	BADARGS(1, 1);
+	for (user = suserlist; user; user = user->next)
+		Tcl_AppendElement(irp, user->user);
+	return TCL_OK;
+}
+
+static int tcl_delsuser STDVAR
+{
+  struct stats_userlist *u;
+
+  Context;
+  BADARGS(2, 2, " statsusername");
+
+  u = findsuser_by_name(argv[1]);
+  if (!u) {
+    Tcl_AppendResult(irp, "User not found.", NULL);
+    return TCL_ERROR;
+  }
+  delsuser(argv[1]);
+  return TCL_OK;
+}
+
+
+
 static tcl_cmds mytcls[] =
 {
   {"incrstats", tcl_incrstats},
@@ -247,5 +275,7 @@ static tcl_cmds mytcls[] =
   {"loadstatslang", tcl_loadstatslang},
   {"schattr", tcl_schattr},
   {"activeusers", tcl_activeusers},
+  {"suserlist", tcl_suserlist},
+  {"delsuser", tcl_delsuser},
   {0, 0}
 };

@@ -1,7 +1,7 @@
 /*
  * inet_aton.c -- provides inet_aton() if necessary.
  *
- * $Id: inet_aton.c,v 1.5 2001/04/12 02:39:44 guppy Exp $
+ * $Id: inet_aton.c,v 1.1 2005/04/08 13:48:26 Administrator Exp $
  */
 /*
  * Poritions Copyright (C) 2000, 2001 Eggheads Development Team

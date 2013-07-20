@@ -2,7 +2,7 @@
  * memcpy.h
  *   prototypes for memcpy.c
  *
- * $Id: memcpy.h,v 1.3 2001/04/12 02:39:44 guppy Exp $
+ * $Id: memcpy.h,v 1.1 2005/04/08 13:48:26 Administrator Exp $
  */
 /*
  * Copyright (C) 2000, 2001 Eggheads Development Team

@@ -2,7 +2,7 @@
  * snprintf.h
  *   header file for snprintf.c
  *
- * $Id: snprintf.h,v 1.7 2001/04/12 02:39:44 guppy Exp $
+ * $Id: snprintf.h,v 1.1 2005/04/08 13:48:28 Administrator Exp $
  */
 /*
  * Copyright (C) 2000, 2001 Eggheads Development Team

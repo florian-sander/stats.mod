@@ -1,0 +1,8 @@
+Changes in this devel-version:
+------------------------------
+
+dev21:
+
+- users with wildcards in their hosts aren't auto-added anymore
+- added option to turn off greeting of new users
+- added [suserlist]

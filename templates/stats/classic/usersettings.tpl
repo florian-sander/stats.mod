@@ -62,7 +62,7 @@
   </td>
 </tr>
 <tr><td>&nbsp;</td><td>&nbsp;</td></tr>
-<tr><td><?slang id="</td><td>&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
 <tr>
   <td><?-- "New Password" --/?><?slang id="1040"/?>: </td>
   <td><INPUT TYPE="password" SIZE="12" MAXLENGTH="1000" NAME="newpassword" value=""></td>

@@ -8,7 +8,7 @@ Wenn Du ins stats.mod noch wie bei MircStats die verschiedenen Nicks der User an
 
 eggdrop userdatenbank komplett ignorierbar per option machen
 
-Suchmaschienen-Spider optional blockierbar machen.
+Suchmaschienen-Spider optional blockierbar machen. (robots.txt)
 
 flag um user vorm löschen zu bewahren
 

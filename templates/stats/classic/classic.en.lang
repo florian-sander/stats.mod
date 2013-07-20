@@ -151,30 +151,25 @@ F vocables 2 <a href="../users/<?user/?>/"><?user/?></a> used almost as much voc
 1000 User Login
 1010 Username
 1020 Password
-1030 If you don't have a password set yet, you can do it now on IRC:
-1040 WARNING: This password will be transferred and stored in plaintext, so better don't use your mail password or any other important password.
-1050 Login
-1060 I forgot my password
+1030 Age
+1035 allowed inactivity
+1036 account will be deleted after this deadline
+1040 new password
+1045 new password (confirmation)
+1050 ICQ#
+1060 eMail
+1070 Homepage
+1080 List me in the top<?topnr/?>?
+1081 add new hosts to my account automatically?
+1082 make my stats available at all?
+1083 (in case you are worried about privacy...)
+1085 yay
+1086 nope
 
-1100 Settings for <?user/?>
-1110 Age
-1115 Allowed inactivity
-1116 before account gets deleted
-1120 ICQ#
-1130 eMail
-1140 Homepage
-1150 List me in the top<?topnr/?>?
-1151 Automatically add new hosts to my account?
-1152 Publish my stats at all?
-1153 (for those concerned about privacy...)
-1160 yes
-1165 no
-1170 If you want to change your password, enter the new one below:
-1171 New Password
-1172 Confirm New Password
-1180 If you want to merge your account with another one
-1181
-1182
+1100 User Login
+1110 If you don't have a password set yet, you can do it now on IRC:
+1120 WARNING: This password will be transferred and stored in plaintext, so better don't use your mail password or any other important password.
+1130 I forgot my password
 
 1200 Login Error!
 1210 Your attempt to login resulted in the following error:

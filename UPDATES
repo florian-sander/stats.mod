@@ -14,6 +14,8 @@ Changes in Stats.mod: (since v1.0.1)
 - added filter for stupid color-codes
 - new way of expireing users
 - new command: !lastspoke
+- new users get greeted
+- added tcl command [suserlist]
 
 
 1.3.2

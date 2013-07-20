@@ -1,6 +1,6 @@
 # Generated automatically from Makefile.in by configure.
 # Makefile for src/compat/
-# $Id: Makefile.in,v 1.5 2000/09/12 15:26:51 fabian Exp $
+# $Id: Makefile,v 1.1 2005/04/08 13:48:26 Administrator Exp $
 
 SHELL = /bin/sh
 top_srcdir = ../..

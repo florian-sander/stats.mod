@@ -1,7 +1,7 @@
 /*
  * memcpy.c -- provides memcpy() if necessary.
  *
- * $Id: memcpy.c,v 1.2 2001/04/12 02:39:44 guppy Exp $
+ * $Id: memcpy.c,v 1.1 2005/04/08 13:48:26 Administrator Exp $
  */
 /*
  * Copyright (C) 1997 Robey Pointer

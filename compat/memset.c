@@ -1,7 +1,7 @@
 /*
  * memset.c -- provides memset() if necessary.
  *
- * $Id: memset.c,v 1.3 2001/04/12 02:39:44 guppy Exp $
+ * $Id: memset.c,v 1.1 2005/04/08 13:48:26 Administrator Exp $
  */
 /*
  * Copyright (C) 1997 Robey Pointer

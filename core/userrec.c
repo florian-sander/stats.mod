@@ -226,6 +226,10 @@ static void stats_autosadd(struct stats_member *m, struct stats_chan *chan)
            m->nick, chan->chan, m->user->user);
     return;
   }
+  if (!m->uhost)
+  	return;
+  if (strchr(m->uhost, '*') ||  strchr(m->uhost, '?'))
+  	return;
   u = findsuser_by_name(m->nick);
   host = nmalloc(strlen(m->uhost) + strlen(m->nick) + 2);
   sprintf(host, "%s!%s", m->nick, m->uhost);
@@ -279,6 +283,8 @@ static void welcome_suser(char *nick, struct stats_userlist *u, char *chan)
   char *text;
 
   reset_global_vars();
+  if (!greet_new_users)
+  	return;
   glob_user = u;
   glob_nick = nick;
   glob_slang = slang_find(coreslangs, slang_chanlang_get(chanlangs, chan));

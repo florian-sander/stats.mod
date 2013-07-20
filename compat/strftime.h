@@ -2,7 +2,7 @@
  * strftime.h
  *   header file for strftime.c
  *
- * $Id: strftime.h,v 1.1 2000/09/12 15:34:01 fabian Exp $
+ * $Id: strftime.h,v 1.1 2005/04/08 13:48:29 Administrator Exp $
  */
 /* 
  * Copyright (C) 2000  Eggheads
