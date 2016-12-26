@@ -1,5 +1,7 @@
 Changes in Stats.mod: (since v1.0.1)
 --------------------
+1.3.4
+- Now also works with eggdrop 1.8.
 
 1.3.3
 - fixed bug which could crash the bot in certain cases
