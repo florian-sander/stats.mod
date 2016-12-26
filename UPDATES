@@ -1,5 +1,7 @@
 Changes in Stats.mod: (since v1.0.1)
 --------------------
+1.4.1
+- Now also works with eggdrop 1.8.
 
 1.4.0
 - added TEMPLATES!

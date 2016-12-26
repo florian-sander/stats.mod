@@ -31,7 +31,7 @@
 
 #define MAKING_STATS
 #define MODULE_NAME "stats"
-#define MODULE_VERSION "1.4.0 dev20"
+#define MODULE_VERSION "1.4.1-dev"
 #ifndef NO_EGG
 #include "../module.h"
 #include "../irc.mod/irc.h"
@@ -474,12 +474,14 @@ char *stats_start(Function * global_funcs)
     return "You need the server module to use the stats module.";
   if (!(channels_funcs = module_depend(MODULE_NAME, "channels", 1, 0)))
     return "You need the channels module to use the stats module.";
-  if (!module_depend(MODULE_NAME, "eggdrop", 107, 0)) {
-    if (!module_depend(MODULE_NAME, "eggdrop", 106, 0)) {
-      if (!module_depend(MODULE_NAME, "eggdrop", 105, 0)) {
-        if (!module_depend(MODULE_NAME, "eggdrop", 104, 0)) {
-          module_undepend(MODULE_NAME);
-          return "Sorry, stats.mod doesn't work with this eggdrop version.";
+  if (!module_depend(MODULE_NAME, "eggdrop", 108, 0)) {
+    if (!module_depend(MODULE_NAME, "eggdrop", 107, 0)) {
+      if (!module_depend(MODULE_NAME, "eggdrop", 106, 0)) {
+        if (!module_depend(MODULE_NAME, "eggdrop", 105, 0)) {
+          if (!module_depend(MODULE_NAME, "eggdrop", 104, 0)) {
+            module_undepend(MODULE_NAME);
+            return "Sorry, stats.mod doesn't work with this eggdrop version.";
+          }
         }
       }
     }
