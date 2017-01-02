@@ -467,7 +467,7 @@ static void send_livestats(int idx, char *buf)
       }
     }
     dprintf(idx, "<tr><th colspan=3 align=center>");
-    dprintf(idx, "<a href=\"http://www.visions-of-fantasy.de/stats.mod/\">");
+    dprintf(idx, "<a href=\"http://www.kreativrauschen.de/stats.mod/\">");
     dprintf(idx, "Stats.mod v%s</a></th></tr></table>\n", MODULE_VERSION);
     long_dprintf(idx, SLFOOTER);
     dprintf(idx, "</body></html>\n");
@@ -529,7 +529,7 @@ static void send_livestats(int idx, char *buf)
     dprintf(idx, "<tr><td align=center colspan=2><a href=\"misc/\">%s</a></td></tr>", SLMISCSTATS);
     dprintf(idx, "<tr><td colspan=2 height=0><font size=-5>&nbsp;</font></td></tr>\n");
     dprintf(idx, "<tr><th colspan=2 align=center><font size=-2>");
-    dprintf(idx, "<a href=\"http://www.visions-of-fantasy.de/stats.mod/\">");
+    dprintf(idx, "<a href=\"http://www.kreativrauschen.de/stats.mod/\">");
     dprintf(idx, "Stats.mod v%s</a></font></th></tr></table>\n", MODULE_VERSION);
     dprintf(idx, "</center>\n");
     long_dprintf(idx, SLFOOTER);
@@ -640,7 +640,7 @@ static void send_livestats(int idx, char *buf)
         b += bstep;
       }
 /*
-*     dprintf(idx, "<tr><td colspan=2 align=center><a href=\"http://www.visions-of-fantasy.de/stats.mod/\">");
+*     dprintf(idx, "<tr><td colspan=2 align=center><a href=\"http://www.kreativrauschen.de/stats.mod/\">");
 *     dprintf(idx, "Stats.mod v%s</a></td></tr></table>\n", MODULE_VERSION);
 */
       dprintf(idx, "</table>\n");
@@ -655,7 +655,7 @@ static void send_livestats(int idx, char *buf)
       dprintf(idx, "<td width=25%% align=center><font size=-1><a href=\"../../\">%s</a></font></td>\n", SLOTHERCHANS);
       dprintf(idx, "</tr></table></td></tr>\n");
       dprintf(idx, "</table>\n");
-      dprintf(idx, "<center>Created by <a href=\"http://www.visions-of-fantasy.de/stats.mod/\">Stats.mod v%s</a></center></body></html>", MODULE_VERSION);
+      dprintf(idx, "<center>Created by <a href=\"http://www.kreativrauschen.de/stats.mod/\">Stats.mod v%s</a></center></body></html>", MODULE_VERSION);
       dprintf(idx, "</center>\n");
       long_dprintf(idx, SLFOOTER);
       dprintf(idx, "</body></html>");
@@ -793,7 +793,7 @@ static void send_livestats(int idx, char *buf)
     dprintf(idx, "<td width=20%% align=center><font size=-1><a href=\"../../../\">%s</a></font></td>\n", SLOTHERCHANS);
     dprintf(idx, "</tr></table></td></tr>\n");
     dprintf(idx, "</table>\n");
-    dprintf(idx, "<center>Created by <a href=\"http://www.visions-of-fantasy.de/stats.mod/\">Stats.mod v%s</a></center></body></html>", MODULE_VERSION);
+    dprintf(idx, "<center>Created by <a href=\"http://www.kreativrauschen.de/stats.mod/\">Stats.mod v%s</a></center></body></html>", MODULE_VERSION);
     long_dprintf(idx, SLFOOTER);
     dprintf(idx, "</body></html>");
     return;
@@ -931,7 +931,7 @@ static void do_graphs(int idx, int today, globstats *gs, char *channel)
   dprintf(idx, "</tr></table></td></tr>\n");
   dprintf(idx, "</table>\n");
   dprintf(idx, "<br><center>Created by "
-          "<a href=\"http://www.visions-of-fantasy.de/stats.mod/\">Stats.mod "
+          "<a href=\"http://www.kreativrauschen.de/stats.mod/\">Stats.mod "
           "v%s</a></center>\n", MODULE_VERSION);
   long_dprintf(idx, SLFOOTER);
   dprintf(idx, "</body></html>");
@@ -1103,7 +1103,7 @@ static void do_toptalkers(int idx, int today, globstats *gs, char *channel, char
   dprintf(idx, "</table><br>");
   if (!today)
     dprintf(idx, SLGSTARTED);
-  dprintf(idx, "<br><a href=\"http://www.visions-of-fantasy.de/stats.mod/\">Stats.mod v%s</a>.", MODULE_VERSION);
+  dprintf(idx, "<br><a href=\"http://www.kreativrauschen.de/stats.mod/\">Stats.mod v%s</a>.", MODULE_VERSION);
   dprintf(idx, "</CENTER>\n");
   long_dprintf(idx, SLFOOTER);
   dprintf(idx, "</body></html>");
@@ -1476,7 +1476,7 @@ static void do_miscstats(int idx, char *channel)
   dprintf(idx, "<td width=25%% align=center><font size=-1><a href=\"../../\">%s</a></font></td>\n", SLOTHERCHANS);
   dprintf(idx, "</tr></table></td></tr>\n");
   dprintf(idx, "</table>\n");
-  dprintf(idx, "<center>Created by <a href=\"http://www.visions-of-fantasy.de/stats.mod/\">Stats.mod v%s</a></center></body></html>", MODULE_VERSION);
+  dprintf(idx, "<center>Created by <a href=\"http://www.kreativrauschen.de/stats.mod/\">Stats.mod v%s</a></center></body></html>", MODULE_VERSION);
   long_dprintf(idx, SLFOOTER);
   dprintf(idx, "</body></html>");
 }
@@ -1552,7 +1552,7 @@ static void display_users_on_chan(int idx, char *channel, struct chanset_t *chan
   dprintf(idx, "<td width=25%% align=center><font size=-1><a href=\"../../\">%s</a></font></td>\n", SLOTHERCHANS);
   dprintf(idx, "</tr></table></td></tr>\n");
   dprintf(idx, "</table>\n");
-  dprintf(idx, "<center>Created by <a href=\"http://www.visions-of-fantasy.de/stats.mod/\">Stats.mod v%s</a></center></body></html>", MODULE_VERSION);
+  dprintf(idx, "<center>Created by <a href=\"http://www.kreativrauschen.de/stats.mod/\">Stats.mod v%s</a></center></body></html>", MODULE_VERSION);
   long_dprintf(idx, SLFOOTER);
   dprintf(idx, "</body></html>");
 }

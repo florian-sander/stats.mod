@@ -223,17 +223,11 @@ If your bot is on big channels, your memory table might be too small.
 Edit src/mem.c and change the #define that sets the size of the memtable
 (#define MEMTBLSIZE 25000      /* yikes! */) to a higher value.
 
-Feedback:
----------
-
-Feel free to send feedback and bugreports(I hope there won't be any<g>) to
-stats.mod@visions-of-fantasy.de
-
 Homepage:
 ---------
 
 The latest version of stats.mod(and a few addons) can always be found at
-http://www.visions-of-fantasy.de/stats.mod/
+http://www.kreativrauschen.de/stats.mod/
 
 Thanks to:
 ----------
