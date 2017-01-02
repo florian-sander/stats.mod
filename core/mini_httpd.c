@@ -611,6 +611,41 @@ static void out_http(int idx, char *buf, void *x)
  */
 static void httpd_accept(int idx, char *buf, int len)
 {
+#if EGG_IS_MIN_VER(10800)
+  int i, j = 0;
+  sockname_t name;
+  unsigned short port;
+
+  Context;
+  if (dcc_total + 1 >= max_dcc) {
+    j = answer(dcc[idx].sock, &name, &port, 0);
+    if (j != -1) {
+      dprintf(-j, "Sorry, too many connections already.\r\n");
+      killsock(j);
+    }
+    return;
+  }
+  if ((i = new_dcc(&LIVESTATS, sizeof(struct stats_clientinfo))) == (-1)) {
+    putlog(LOG_MISC, "*", "Error accepting livestats connection. DCC table is full.");
+    return;
+  }
+  dcc[i].sock = answer(dcc[idx].sock, &dcc[i].sockname,
+                       (short unsigned *) &dcc[i].port, 0);
+  if (dcc[i].sock < 0) {
+    putlog(LOG_MISC, "*", "Stats.mod: Error accepting livestats connection: %s", strerror(errno));
+    lostdcc(i);
+    return;
+  }
+  strcpy(dcc[i].nick, "httpstats");
+  strcpy(dcc[i].host, iptostr(&dcc[idx].sockname.addr.sa));
+  dcc[i].timeval = now;
+  dcc[i].status = 0;
+  ((struct stats_clientinfo *) dcc[i].u.other)->traffic = 0;
+  ((struct stats_clientinfo *) dcc[i].u.other)->code = 200;
+  ((struct stats_clientinfo *) dcc[i].u.other)->browser = NULL;
+  ((struct stats_clientinfo *) dcc[i].u.other)->referer = NULL;
+  ((struct stats_clientinfo *) dcc[i].u.other)->cmd = NULL;
+#else
   unsigned long ip;
   unsigned short port;
   int j = 0, sock, i;
@@ -647,6 +682,7 @@ static void httpd_accept(int idx, char *buf, int len)
   	  (ip >> 8) & 0xff, ip & 0xff); /* dw */
 #endif
   strcpy(dcc[i].host, s);
+#endif
   dcc[i].timeval = now;
   dcc[i].status = 0;
   // init http_connection_data struct
