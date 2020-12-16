@@ -245,7 +245,7 @@ static char *getslang(int id)
   char *text;
 
   if (!glob_slang) {
-    putlog(LOG_MISC, "*", "WARNING! No language selected! (getslang())");
+    putlog(LOG_MISC, "*", "Stats warning: no language selected. (getslang())");
     return "NOLANG";
   }
   text = slang_id_get(glob_slang->ids, id);
@@ -262,7 +262,7 @@ static char *getdur(int idx)
 
   Assert((idx >= 0) && (idx < DURATIONS));
   if (!glob_slang) {
-    putlog(LOG_MISC, "*", "WARNING! No language selected! (getdur())");
+    putlog(LOG_MISC, "*", "Stats warning: no language selected. (getdur())");
     return "NOLANG";
   }
   text = slang_duration_get(glob_slang->durations, idx);
@@ -279,7 +279,7 @@ static char *getslangtype(char *type)
   char *stype;
 
   if (!glob_slang) {
-    putlog(LOG_MISC, "*", "WARNING! No language selected! (getslangtype())");
+    putlog(LOG_MISC, "*", "Stats warning: no language selected. (getslangtype())");
     return "NOLANG";
   }
   stype = slang_type_get(glob_slang->types, type);
@@ -294,7 +294,7 @@ static int slangtypetoi(char *slangtype)
   char *type;
 
   if (!glob_slang) {
-    putlog(LOG_MISC, "*", "WARNING! No language selected! (slangtypetoi())");
+    putlog(LOG_MISC, "*", "Stats warning: no language selected. (slangtypetoi())");
     return T_ERROR;
   }
   type = slang_type_slang2type(glob_slang->types, slangtype);
@@ -312,7 +312,7 @@ static char *getslang_first(int id)
   char *text;
 
   if (!glob_slang) {
-    putlog(LOG_MISC, "*", "WARNING! No language selected! (getslang())");
+    putlog(LOG_MISC, "*", "Stats warning: no language selected. (getslang_first())");
     return "NOLANG";
   }
   text = slang_id_get_first(glob_slang->ids, id);
@@ -325,6 +325,9 @@ static char *getslang_first(int id)
 
 static char *getslang_next()
 {
+  if (!glob_slang) {
+    return NULL;
+  }
   return slang_id_get_next();
 }
 #endif

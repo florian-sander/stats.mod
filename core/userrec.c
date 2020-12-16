@@ -282,11 +282,8 @@ static void welcome_suser(char *nick, struct stats_userlist *u, char *chan)
   glob_user = u;
   glob_nick = nick;
   glob_slang = slang_find(coreslangs, slang_chanlang_get(chanlangs, chan));
-  if ((text = getslang_first(500))) {
+  for (text = getslang_first(500); text; text = getslang_next())
     dprintf(DP_HELP, "NOTICE %s :%s\n", nick, text);
-    while ((text = getslang_next()))
-      dprintf(DP_HELP, "NOTICE %s :%s\n", nick, text);
-  }
 }
 
 static int listsuser(locstats *ls, char *chan)
