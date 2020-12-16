@@ -31,7 +31,7 @@
 
 #define MAKING_STATS
 #define MODULE_NAME "stats"
-#define MODULE_VERSION "1.4.1-dev"
+#define MODULE_VERSION "1.5.0"
 #ifndef NO_EGG
 #include "../module.h"
 #include "../irc.mod/irc.h"
@@ -467,7 +467,7 @@ char *stats_start(Function * global_funcs)
   chanlangs = NULL;
   slang_glob_init();
   Context;
-  module_register(MODULE_NAME, stats_table, 1, 4);
+  module_register(MODULE_NAME, stats_table, 1, 5);
   if (!(irc_funcs = module_depend(MODULE_NAME, "irc", 1, 0)))
     return "You need the irc module to use the stats module.";
   if (!(server_funcs = module_depend(MODULE_NAME, "server", 1, 0)))
@@ -475,16 +475,8 @@ char *stats_start(Function * global_funcs)
   if (!(channels_funcs = module_depend(MODULE_NAME, "channels", 1, 0)))
     return "You need the channels module to use the stats module.";
   if (!module_depend(MODULE_NAME, "eggdrop", 108, 0)) {
-    if (!module_depend(MODULE_NAME, "eggdrop", 107, 0)) {
-      if (!module_depend(MODULE_NAME, "eggdrop", 106, 0)) {
-        if (!module_depend(MODULE_NAME, "eggdrop", 105, 0)) {
-          if (!module_depend(MODULE_NAME, "eggdrop", 104, 0)) {
-            module_undepend(MODULE_NAME);
-            return "Sorry, stats.mod doesn't work with this eggdrop version.";
-          }
-        }
-      }
-    }
+    module_undepend(MODULE_NAME);
+    return "Sorry, stats.mod requires Eggdrop 1.8.0 or later.";
   }
 #ifndef OLDBOT
   livestats_timeout = 10;
