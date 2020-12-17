@@ -42,6 +42,7 @@
 #include <ctype.h>
 #include <sys/types.h>
 #include <fcntl.h>
+#include <errno.h>
 
 #undef global
 static Function *global = NULL, *irc_funcs = NULL, *server_funcs = NULL, *channels_funcs = NULL;
