@@ -611,42 +611,35 @@ static void out_http(int idx, char *buf, void *x)
  */
 static void httpd_accept(int idx, char *buf, int len)
 {
-  unsigned long ip;
+  sockname_t name;
   unsigned short port;
   int j = 0, sock, i;
-  char s[UHOSTLEN];
 
   Context;
-  if (dcc_total + 1 >= max_dcc) {
-    j = answer(dcc[idx].sock, s, &ip, &port, 0);
+  if (dcc_total + 1 > max_dcc && increase_socks_max()) {
+    j = answer(dcc[idx].sock, &name, &port, 0);
     if (j != -1) {
       dprintf(-j, "Sorry, too many connections already.\r\n");
       killsock(j);
     }
     return;
   }
-  sock = answer(dcc[idx].sock, s, &ip, &port, 0);
-  if (sock < 0) {
-    neterror(s);
-    putlog(LOG_MISC, "*", "HTTPd: Error accepting connection: %s", s);
+  if ((i = new_dcc(&MHTTPD_CON_HTTP, sizeof(struct http_connection_data))) < 0) {
+    putlog(LOG_MISC, "*", "Stats HTTPd error: could not get new dcc.");
     return;
   }
-  if ((i = new_dcc(&MHTTPD_CON_HTTP, sizeof(struct http_connection_data))) == (-1)) {
-    putlog(LOG_MISC, "*", "Error accepting http connection. DCC table is full.");
-    killsock(sock);
+  sock = answer(dcc[idx].sock, &dcc[i].sockname, &port, 0);
+  while ((sock == -1) && (errno == EAGAIN))
+    sock = answer(dcc[idx].sock, &dcc[i].sockname, &port, 0);
+  if (sock < 0) {
+    putlog(LOG_MISC, "*", "Stats HTTPd error: %s", strerror(errno));
     return;
   }
   dcc[i].sock = sock;
-  dcc[i].addr = ip;
+  // dcc[idx].addr = 0;
   dcc[i].port = port;
-  strcpy(dcc[i].nick, "http");
-#ifndef OLDBOT
-  sprintf(s, "%s", iptostr(my_htonl(ip)));
-#else
-  sprintf(s, "%lu.%lu.%lu.%lu", (ip >> 24) & 0xff, (ip >> 16) & 0xff,
-  	  (ip >> 8) & 0xff, ip & 0xff); /* dw */
-#endif
-  strcpy(dcc[i].host, s);
+  strcpy(dcc[i].nick, "statshttp");
+  // strcpy(dcc[i].host, iptostr(&dcc[idx].sockname.addr.sa));
   dcc[i].timeval = now;
   dcc[i].status = 0;
   // init http_connection_data struct
