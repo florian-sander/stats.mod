@@ -146,25 +146,26 @@ static void unload_httpd()
 static void start_httpd(int port)
 {
   int i, zz;
-  char tmp[50];
+#ifdef IPV6
+  char tmp[INET6_ADDRSTRLEN + sizeof "set listen-addr ;"];
+#else
+  char tmp[INET_ADDRSTRLEN + sizeof "set listen-addr ;"];
+#endif
 
   Context;
   // a little hack to make httpd listen on the defined vhost
   // (or on all vhosts, if none is defined)
-  // Just set my-ip to the wanted vhost, since open_listen()
+  // Just set listen-addr to the wanted vhost, since open_listen()
   // uses this var
-  sprintf(tmp, "set my-ip \"%s\";", httpd_ip);
+  snprintf(tmp, sizeof tmp, "set listen-addr \"%s\";", httpd_ip);
   do_tcl("httpd-hack-start",
-      "set my-ip-httpd-backup ${my-ip};"
-      "set my-hostname-httpd-backup ${my-hostname};"
-      "set my-hostname \"\"");
+      "set listen-addr-httpd-backup ${listen-addr}");
   do_tcl("httpd-hack-setip", tmp);
   // now get a listening socket
   zz = open_listen(&port);
-  // don't forget to restore my-ip when we're done ^_^
+  // don't forget to restore listen-addr when we're done ^_^
   do_tcl("httpd-hack-end",
-      "set my-ip ${my-ip-httpd-backup};"
-      "set my-hostname ${my-hostname-httpd-backup}");
+      "set listen-addr ${listen-addr-httpd-backup}");
   // ohoh, we didn't get a socket :(
   if (zz == (-1)) {
     putlog(LOG_MISC, "*", "ERROR! Cannot open listening socket for httpd!");
@@ -639,7 +640,7 @@ static void httpd_accept(int idx, char *buf, int len)
   // dcc[idx].addr = 0;
   dcc[i].port = port;
   strcpy(dcc[i].nick, "statshttp");
-  // strcpy(dcc[i].host, iptostr(&dcc[idx].sockname.addr.sa));
+  strcpy(dcc[i].host, iptostr(&dcc[i].sockname.addr.sa));
   dcc[i].timeval = now;
   dcc[i].status = 0;
   // init http_connection_data struct
