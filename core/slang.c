@@ -151,7 +151,7 @@ static int slang_load(struct slang_header *slang, char *filename)
 #ifndef SLANG_NOTYPES
   char *type;
 #endif
-  int line, id, iplace, itype;
+  int line, id, iplace, itype, l;
 
   Assert(slang);
   putlog(LOG_MISC, "*", "Loading language \"%s\" from %s...", slang->lang, filename);
@@ -167,11 +167,9 @@ static int slang_load(struct slang_header *slang, char *filename)
     if (fgets(s, 2000, f)) {
       line++;
       // at first, kill those stupid line feeds and carriage returns...
-      if (s[strlen(s) - 1] == '\n')
-        s[strlen(s) - 1] = 0;
-      if (s[strlen(s) - 1] == '\r')
-        s[strlen(s) - 1] = 0;
-      if (!s[0])
+      for (l = strlen(s); l && ((s[l - 1] == '\n') || (s[l - 1] == '\r')); l--)
+        s[l - 1] = 0;
+      if (!l)
         continue;
       cmd = newsplit(&s);
 
