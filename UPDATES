@@ -1,9 +1,14 @@
 Changes in Stats.mod: (since v1.0.1)
 --------------------
+
+1.5.1
+- fix heap overflow
+
 1.5.0
-- Now also works with eggdrop 1.8. stats 1.4.1 does not work with
-  eggdrop 1.8-rc1+ / git ac1b6ed3f4f949affd7090a053787fb664f4e292+.
-- Fix crash if no language selected.
+- fix crash if no language selected (Michael Ortmann)
+- now also works with eggdrop 1.8. stats 1.4.1 does not work with
+  eggdrop 1.8-rc1+ / git ac1b6ed3f4f949affd7090a053787fb664f4e292+ (Michael
+  Ortmann)
 
 1.4.1
 - Now also works with eggdrop 1.8.

@@ -31,7 +31,7 @@
 
 #define MAKING_STATS
 #define MODULE_NAME "stats"
-#define MODULE_VERSION "1.5.0"
+#define MODULE_VERSION "1.5.1"
 #ifndef NO_EGG
 #include "../module.h"
 #include "../irc.mod/irc.h"
