@@ -2,7 +2,7 @@ Changes in Stats.mod: (since v1.0.1)
 --------------------
 
 1.5.1
-- fix heap overflow
+- fix heap overflow (Michael Ortmann)
 
 1.5.0
 - fix crash if no language selected (Michael Ortmann)
