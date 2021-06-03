@@ -1,59 +1,84 @@
 %{help=savestats}%{+m}
 ###  %bsavestats%b
-  Saves all data.
+   Saves all data.
+
+See also: purgestats
 %{help=resetuser}%{+m|-}
 ###  %bresetuser%b <user> <chan>
-  resets all statistics of <user> in <chan> to 0.
+   Resets all channel statistics of user to 0.
+
+See also: purgestats, savestats
 %{help=schannel}%{+o|+o}
 ###  %bschannel%b [channel]
-  displays a list of users on the channel, listing their nicks and
-  corresponding stats-usernames.
+   Displays a list of users on the channel, listing their nicks and
+   corresponding stats-usernames.
+
+See also: swhois
 %{help=swhois}%{+o|+o}
 ###  %bswhois%b <user>
-  displays information about <user> (stat-flags, hosts, etc...)
-  flags:
-    +/-list: list a user in the top10/20/etc?
-    +/-addhosts: automatically add new hosts to user?
+   Displays information about user (stat-flags, hosts, etc...).
+   Flags:
+     +/-list: list a user in the top10/20/etc?
+     +/-addhosts: automatically add new hosts to user?
+
+See also: schattr, smatch
 %{help=+shost}%{+m|-}
 ###  %b+shost%b <user> <host>
-  adds a host to <user>
+   Adds a host to user.
+
+See also: -shost
 %{help=-shost}%{+m|-}
 ###  %b-shost%b <user> <host>
-  removes a host from <user>
+   Removes a host from user.
+
+See also: +shost
 %{help=+suser}%{+m|-}
 ###  %b+suser%b <user> [host]
-  creates a new stat-user record
+   Creates a new stat-user record.
+
+See also: -suser, +shost, -shost
 %{help=-suser}%{+m|-}
 ###  %b-suser%b <user>
-  deletes a stat-user
+   Deletes a stat-user.
+
+See also: +suser
 %{help=schattr}%{+m|-}
 ###  %bschattr%b <user> <flags>
-  changes the flags of a stat-user
+   Changes the flags of a stat-user.
+
+See also: swhois
 %{help=smatch}%{+m}
 ###  %bsmatch%b [user] [host] [flags]
-  displays all matching users
-  wildcards allowed.
+   Displays all matching users. Wildcards allowed.
+
+See also: swhois
 %{help=chsusername}%{+m}
 ###  %bchsusername%b <user> <newname>
-  changes the name of an user
+   Changes the name of an user.
+
+See also: +suser, -suser, sumuser
 %{help=writewebstats}%{+m|-}
 ###  %bwritewebstats%b <channels>
-   writes the static (*cough*!) webfiles for the given channels.
+   Writes the static (*cough*!) webfiles for the given channels.
 %{help=purgestats}%{+m|-}
 ###  %bpurgestats%b
-   purges all outdates statistics and deletes old users
+   Purges all outdated statistics and deletes old users.
+
+See also: savestats
 %{help=sumuser}%{+n|-}
 ###  %bsumuser%b <user1> <user2>
-   transfers all stats from user2 to user1 and deletes user2
+   Transfers all stats from user2 to user1 and deletes user2.
+
+See also: chsusername
 %{help=stats module}%{+m}
-###  help on the %bstats module%b
+###  %bstats module%b commands
    Commands available: (use %b'.help <command>'%b for more info)
 %{+o|o}
-   for ops:
+   For ops:
       %bschannel%b
       %bswhois%b
 %{+m|m}
-   for masters:
+   For masters:
       %bsavestats%b
       %bresetuser%b
       %b+shost%b
@@ -67,17 +92,17 @@
       %bpurgestats%b
       %bsumuser%b
 %{+n}
-   There is also a list of tcl settings avalible,
+   There is also a list of tcl settings available,
    use %b'.help stats settings'%b   
 %{help=all}%{+m}
-###  commands for the %bstats module%b
+###  %bstats module%b commands
    Commands available: (use %b'.help <command>'%b for more info)
 %{+o|o}
-   for ops:
+   For ops:
       %bschannel%b
       %bswhois%b
 %{+m|m}
-   for masters:
+   For masters:
       %bsavestats%b
       %bresetuser%b
       %b+shost%b
@@ -91,5 +116,5 @@
       %bpurgestats%b
       %bsumuser%b
 %{+n}
-   There is also a list of tcl settings avalible,
+   There is also a list of tcl settings available,
    use %b'.help stats settings'%b
